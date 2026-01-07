@@ -1,4 +1,4 @@
-# PrayerPal - Prayer Accountability App
+# Mizaan - Prayer Accountability App
 
 A mobile-first social accountability platform that helps Muslims maintain their 5 daily prayers through photo-based check-ins, friend accountability, and streak tracking.
 
@@ -55,7 +55,7 @@ Mizaan/
 2. **Create Database**
    ```bash
    psql -U postgres
-   CREATE DATABASE prayerpal_db;
+   CREATE DATABASE mizaan_db;
    \q
    ```
 
@@ -84,7 +84,7 @@ Mizaan/
    ```
    SECRET_KEY=your-secret-key
    JWT_SECRET_KEY=your-jwt-secret
-   DATABASE_URL=postgresql://postgres:yourpassword@localhost/prayerpal_db
+   DATABASE_URL=postgresql://postgres:yourpassword@localhost/mizaan_db
    FLASK_APP=run.py
    FLASK_ENV=development
    ```
@@ -127,7 +127,7 @@ Mizaan/
 ## Development Status
 
 - [x] Phase 1: Project Setup & Foundation
-- [ ] Phase 2: Authentication System
+- [x] Phase 2: Authentication System
 - [ ] Phase 3: Prayer Time Integration
 - [ ] Phase 4: Photo Check-in System
 - [ ] Phase 5: Streak & Statistics

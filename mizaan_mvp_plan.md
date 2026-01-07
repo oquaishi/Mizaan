@@ -15,7 +15,7 @@
 ## Project Overview
 
 ### App Name
-**PrayerPal** (working title - you can change this)
+**Mizaan**
 
 ### Purpose
 A mobile-first social accountability platform that helps Muslims maintain their 5 daily prayers (Salah) through photo-based check-ins, friend accountability, streak tracking, and gentle reminders. Inspired by Locket's simplicity but focused on spiritual habit-building.
@@ -1174,7 +1174,7 @@ The 10-week plan is ambitious but achievable if you stay focused and consistent.
 
 Remember: The goal is not perfection, but a **working, deployed application** you can demonstrate to recruiters. You can always add more features after landing the job.
 
-Good luck building PrayerPal! 🤲📱
+Good luck building Mizaan! 🤲📱
 
 ---
 

@@ -24,7 +24,7 @@ def create_app(config_class=Config):
 
     @app.route('/api/health')
     def health():
-        return {'status': 'healthy', 'message': 'PrayerPal API is running'}
+        return {'status': 'healthy', 'message': 'Mizaan API is running'}
 
     return app
 
