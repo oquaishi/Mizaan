@@ -1,98 +1,156 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Card, Button, Text, Avatar } from 'react-native-paper';
+import { useRouter } from 'expo-router';
+import { useAuth } from '@/src/context/AuthContext';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const { user, logout, isLoading } = useAuth();
+  const router = useRouter();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/login');
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Card style={styles.card}>
+        <Card.Content style={styles.cardContent}>
+          <Avatar.Icon size={80} icon="account" style={styles.avatar} />
+
+          <Text variant="headlineMedium" style={styles.greeting}>
+            Welcome Back!
+          </Text>
+
+          <Text variant="titleLarge" style={styles.username}>
+            {user?.username}
+          </Text>
+
+          <Text variant="bodyMedium" style={styles.email}>
+            {user?.email}
+          </Text>
+
+          <View style={styles.infoSection}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
+              Account Details
+            </Text>
+
+            <View style={styles.infoRow}>
+              <Text variant="bodyMedium" style={styles.label}>User ID:</Text>
+              <Text variant="bodyMedium" style={styles.value}>{user?.id}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text variant="bodyMedium" style={styles.label}>Calculation Method:</Text>
+              <Text variant="bodyMedium" style={styles.value}>{user?.calculation_method || 'ISNA'}</Text>
+            </View>
+          </View>
+
+          <Button
+            mode="contained"
+            onPress={handleLogout}
+            style={styles.logoutButton}
+            icon="logout"
+          >
+            Log Out
+          </Button>
+        </Card.Content>
+      </Card>
+
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="titleMedium" style={styles.sectionTitle}>
+            🎉 Phase 2 Complete!
+          </Text>
+          <Text variant="bodyMedium" style={styles.successText}>
+            Authentication system is working! You can now:
+          </Text>
+          <Text variant="bodyMedium" style={styles.listItem}>✓ Register new accounts</Text>
+          <Text variant="bodyMedium" style={styles.listItem}>✓ Log in with email/password</Text>
+          <Text variant="bodyMedium" style={styles.listItem}>✓ Stay logged in across sessions</Text>
+          <Text variant="bodyMedium" style={styles.listItem}>✓ Access protected routes</Text>
+          <Text variant="bodyMedium" style={styles.listItem}>✓ Log out securely</Text>
+        </Card.Content>
+      </Card>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
   },
-  stepContainer: {
-    gap: 8,
+  content: {
+    padding: 16,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  card: {
+    marginBottom: 16,
+  },
+  cardContent: {
+    alignItems: 'center',
+  },
+  avatar: {
+    backgroundColor: '#6200ea',
+    marginBottom: 16,
+  },
+  greeting: {
+    marginBottom: 8,
+    fontWeight: 'bold',
+  },
+  username: {
+    marginBottom: 4,
+    color: '#6200ea',
+  },
+  email: {
+    marginBottom: 24,
+    color: '#666',
+  },
+  infoSection: {
+    width: '100%',
+    marginBottom: 24,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  sectionTitle: {
+    marginBottom: 12,
+    fontWeight: 'bold',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  label: {
+    color: '#666',
+  },
+  value: {
+    fontWeight: '500',
+  },
+  logoutButton: {
+    marginTop: 8,
+    width: '100%',
+  },
+  successText: {
+    marginBottom: 12,
+  },
+  listItem: {
+    marginLeft: 8,
+    marginBottom: 4,
   },
 });
