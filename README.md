@@ -128,7 +128,7 @@ Mizaan/
 
 - [x] Phase 1: Project Setup & Foundation
 - [x] Phase 2: Authentication System
-- [ ] Phase 3: Prayer Time Integration
+- [x] Phase 3: Prayer Time Integration
 - [ ] Phase 4: Photo Check-in System
 - [ ] Phase 5: Streak & Statistics
 - [ ] Phase 6: Friend System
@@ -146,6 +146,10 @@ Mizaan/
 
 ### Users
 - `PUT /api/users/settings` - Update user settings (protected)
+
+### Prayer Times
+- `GET /api/prayer-times` - Get today's prayer times (protected)
+- `GET /api/prayer-times/:date` - Get prayer times for specific date (protected)
 
 ### Health Check
 - `GET /api/health` - Check API status
