@@ -18,9 +18,10 @@ def create_app(config_class=Config):
     jwt.init_app(app)
     CORS(app)
 
-    from app.routes import auth, users
+    from app.routes import auth, users, prayer_times
     app.register_blueprint(auth.bp)
     app.register_blueprint(users.bp)
+    app.register_blueprint(prayer_times.bp)
 
     @app.route('/api/health')
     def health():

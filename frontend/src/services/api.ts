@@ -58,4 +58,29 @@ export const authAPI = {
   },
 };
 
+// Prayer Times API calls
+export const prayerTimesAPI = {
+  getTodayPrayerTimes: async () => {
+    const response = await api.get('/prayer-times');
+    return response.data;
+  },
+
+  getPrayerTimesForDate: async (date: string) => {
+    const response = await api.get(`/prayer-times/${date}`);
+    return response.data;
+  },
+};
+
+// User Settings API calls
+export const userAPI = {
+  updateSettings: async (settings: {
+    location?: string;
+    timezone?: string;
+    calculation_method?: string;
+  }) => {
+    const response = await api.put('/users/settings', settings);
+    return response.data;
+  },
+};
+
 export default api;

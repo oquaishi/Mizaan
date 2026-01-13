@@ -16,12 +16,34 @@ def update_settings():
 
     data = request.get_json()
 
+    # Validate and update location (format: "latitude,longitude")
     if 'location' in data:
-        user.location = data['location']
+        location = data['location']
+        try:
+            # Validate location format
+            lat, lon = map(float, location.split(','))
+            if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
+                return jsonify({'error': 'Invalid latitude or longitude values'}), 400
+            user.location = location
+        except (ValueError, AttributeError):
+            return jsonify({'error': 'Location must be in format "latitude,longitude"'}), 400
+
+    # Update timezone
     if 'timezone' in data:
         user.timezone = data['timezone']
+
+    # Validate and update calculation method
     if 'calculation_method' in data:
-        user.calculation_method = data['calculation_method']
+        valid_methods = ['ISNA', 'MWL', 'KARACHI', 'MAKKAH', 'EGYPT']
+        method = data['calculation_method']
+        if method not in valid_methods:
+            return jsonify({
+                'error': 'Invalid calculation method',
+                'valid_methods': valid_methods
+            }), 400
+        user.calculation_method = method
+
+    # Update profile picture
     if 'profile_picture_url' in data:
         user.profile_picture_url = data['profile_picture_url']
 

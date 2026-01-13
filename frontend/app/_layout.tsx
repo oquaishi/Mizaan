@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/src/context/AuthContext';
+import { PrayerTimesProvider } from '@/src/context/PrayerTimesContext';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -50,7 +51,9 @@ export default function RootLayout() {
   return (
     <PaperProvider>
       <AuthProvider>
-        <RootLayoutNav />
+        <PrayerTimesProvider>
+          <RootLayoutNav />
+        </PrayerTimesProvider>
       </AuthProvider>
     </PaperProvider>
   );
