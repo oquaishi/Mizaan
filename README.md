@@ -132,7 +132,7 @@ Mizaan/
 - [x] Phase 4: Photo Check-in System
 - [x] Phase 5: Streak & Statistics
 - [x] Phase 6: Friend System
-- [ ] Phase 7: Activity Feed
+- [x] Phase 7: Activity Feed
 - [ ] Phase 8: Notifications
 - [ ] Phase 9: Polish & UX
 - [ ] Phase 10: Testing & Deployment
@@ -167,6 +167,11 @@ Mizaan/
 - `GET /api/friends` - Get accepted friends list (protected)
 - `GET /api/friends/requests` - Get incoming pending requests (protected)
 - `DELETE /api/friends/:id` - Remove a friend (protected)
+
+### Feed
+- `GET /api/feed` - Get paginated friend activity feed (protected)
+- `POST /api/feed/:prayer_id/react` - React to a friend's prayer (protected)
+- `DELETE /api/feed/:prayer_id/react` - Remove a reaction (protected)
 
 ### Health Check
 - `GET /api/health` - Check API status
