@@ -1,112 +1,278 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
+import { Text, Card, ActivityIndicator } from 'react-native-paper';
+import { statsAPI, Stats, CalendarDay } from '../../src/services/statsService';
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+export default function StatisticsScreen() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-export default function TabTwoScreen() {
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      const data = await statsAPI.getStats();
+      setStats(data);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadStats();
+  };
+
+  const getCalendarColor = (status: CalendarDay['status']) => {
+    switch (status) {
+      case 'complete': return '#4caf50';
+      case 'partial': return '#ff9800';
+      case 'missed': return '#e0e0e0';
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#6750a4" />
+        <Text style={styles.loadingText}>Loading statistics...</Text>
+      </View>
+    );
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <ScrollView
+      style={styles.container}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      <View style={styles.header}>
+        <Text style={styles.title}>Statistics</Text>
+        <Text style={styles.subtitle}>Your prayer journey</Text>
+      </View>
+
+      {/* Streak Cards */}
+      <View style={styles.streakRow}>
+        <Card style={[styles.streakCard, styles.currentStreakCard]}>
+          <Card.Content style={styles.streakContent}>
+            <Text style={styles.streakNumber}>{stats?.current_streak ?? 0}</Text>
+            <Text style={styles.streakLabel}>Current{'\n'}Streak</Text>
+            <Text style={styles.streakEmoji}>🔥</Text>
+          </Card.Content>
+        </Card>
+
+        <Card style={[styles.streakCard, styles.longestStreakCard]}>
+          <Card.Content style={styles.streakContent}>
+            <Text style={styles.streakNumber}>{stats?.longest_streak ?? 0}</Text>
+            <Text style={styles.streakLabel}>Longest{'\n'}Streak</Text>
+            <Text style={styles.streakEmoji}>🏆</Text>
+          </Card.Content>
+        </Card>
+      </View>
+
+      {/* Completion Rate Cards */}
+      <View style={styles.rateRow}>
+        <Card style={styles.rateCard}>
+          <Card.Content style={styles.rateContent}>
+            <Text style={styles.rateNumber}>{stats?.weekly_completion_rate ?? 0}%</Text>
+            <Text style={styles.rateLabel}>7-Day Rate</Text>
+          </Card.Content>
+        </Card>
+
+        <Card style={styles.rateCard}>
+          <Card.Content style={styles.rateContent}>
+            <Text style={styles.rateNumber}>{stats?.monthly_completion_rate ?? 0}%</Text>
+            <Text style={styles.rateLabel}>30-Day Rate</Text>
+          </Card.Content>
+        </Card>
+      </View>
+
+      {/* Calendar */}
+      <Card style={styles.calendarCard}>
+        <Card.Content>
+          <Text style={styles.calendarTitle}>Last 30 Days</Text>
+
+          <View style={styles.legend}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: '#4caf50' }]} />
+              <Text style={styles.legendText}>Complete</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: '#ff9800' }]} />
+              <Text style={styles.legendText}>Partial</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: '#e0e0e0' }]} />
+              <Text style={styles.legendText}>Missed</Text>
+            </View>
+          </View>
+
+          <View style={styles.calendarGrid}>
+            {stats?.calendar.map((day) => (
+              <View key={day.date} style={styles.calendarDayWrapper}>
+                <View
+                  style={[
+                    styles.calendarDay,
+                    { backgroundColor: getCalendarColor(day.status) },
+                  ]}
+                />
+                <Text style={styles.calendarDayNumber}>
+                  {new Date(day.date + 'T00:00:00').getDate()}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </Card.Content>
+      </Card>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
   },
-  titleContainer: {
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#666',
+  },
+  header: {
+    padding: 20,
+    paddingTop: 60,
+    backgroundColor: '#6750a4',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#e0e0e0',
+    marginTop: 4,
+  },
+  streakRow: {
     flexDirection: 'row',
-    gap: 8,
+    padding: 16,
+    paddingBottom: 8,
+    gap: 12,
+  },
+  streakCard: {
+    flex: 1,
+    elevation: 4,
+  },
+  currentStreakCard: {
+    backgroundColor: '#6750a4',
+  },
+  longestStreakCard: {
+    backgroundColor: '#3f3f3f',
+  },
+  streakContent: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  streakNumber: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  streakLabel: {
+    fontSize: 13,
+    color: '#ddd',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  streakEmoji: {
+    fontSize: 24,
+    marginTop: 8,
+  },
+  rateRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    gap: 12,
+  },
+  rateCard: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  rateContent: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  rateNumber: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#6750a4',
+  },
+  rateLabel: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 4,
+  },
+  calendarCard: {
+    margin: 16,
+    marginTop: 8,
+    backgroundColor: '#fff',
+  },
+  calendarTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  legend: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 16,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  legendText: {
+    fontSize: 12,
+    color: '#666',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  calendarDayWrapper: {
+    alignItems: 'center',
+    width: 36,
+  },
+  calendarDay: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+  },
+  calendarDayNumber: {
+    fontSize: 10,
+    color: '#999',
+    marginTop: 2,
   },
 });

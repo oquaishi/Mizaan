@@ -130,7 +130,7 @@ Mizaan/
 - [x] Phase 2: Authentication System
 - [x] Phase 3: Prayer Time Integration
 - [x] Phase 4: Photo Check-in System
-- [ ] Phase 5: Streak & Statistics
+- [x] Phase 5: Streak & Statistics
 - [ ] Phase 6: Friend System
 - [ ] Phase 7: Activity Feed
 - [ ] Phase 8: Notifications
@@ -156,6 +156,9 @@ Mizaan/
 - `GET /api/prayers/today` - Get today's completed and pending prayers (protected)
 - `GET /api/prayers/history` - Get prayer history (protected)
 - `DELETE /api/prayers/:id` - Delete a prayer check-in (protected)
+
+### Statistics
+- `GET /api/stats` - Get current streak, longest streak, completion rates, and 30-day calendar (protected)
 
 ### Health Check
 - `GET /api/health` - Check API status
