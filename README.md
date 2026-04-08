@@ -129,7 +129,7 @@ Mizaan/
 - [x] Phase 1: Project Setup & Foundation
 - [x] Phase 2: Authentication System
 - [x] Phase 3: Prayer Time Integration
-- [ ] Phase 4: Photo Check-in System
+- [x] Phase 4: Photo Check-in System
 - [ ] Phase 5: Streak & Statistics
 - [ ] Phase 6: Friend System
 - [ ] Phase 7: Activity Feed
@@ -150,6 +150,12 @@ Mizaan/
 ### Prayer Times
 - `GET /api/prayer-times` - Get today's prayer times (protected)
 - `GET /api/prayer-times/:date` - Get prayer times for specific date (protected)
+
+### Prayers (Check-ins)
+- `POST /api/prayers/check-in` - Check in for a prayer with optional photo (protected)
+- `GET /api/prayers/today` - Get today's completed and pending prayers (protected)
+- `GET /api/prayers/history` - Get prayer history (protected)
+- `DELETE /api/prayers/:id` - Delete a prayer check-in (protected)
 
 ### Health Check
 - `GET /api/health` - Check API status
