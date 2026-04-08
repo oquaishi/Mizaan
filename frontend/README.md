@@ -1,50 +1,34 @@
-# Welcome to your Expo app 👋
+# Mizaan - Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+React Native mobile app built with Expo for the Mizaan prayer accountability platform.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Setup
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Running
 
-## Learn more
+- **Expo Go (iPhone/Android):** Scan QR code from terminal
+- **Web browser:** `npx expo start --web`
+- **Android emulator:** `npx expo start --android`
 
-To learn more about developing your project with Expo, look at the following resources:
+## Project Structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+app/
+  (tabs)/         - Tab screens (Home, Check-In, Prayer Times, Settings)
+  login.tsx       - Login screen
+  register.tsx    - Register screen
+  _layout.tsx     - Root layout with auth navigation
 
-## Join the community
+src/
+  context/        - AuthContext, PrayerTimesContext
+  services/       - API calls (auth, prayer times, check-in)
+```
 
-Join our community of developers creating universal apps.
+## Environment
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Update `src/services/api.ts` with your machine's local IP for physical device testing.
