@@ -5,6 +5,33 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 bp = Blueprint('users', __name__, url_prefix='/api/users')
 
+
+@bp.route('/search', methods=['GET'])
+@jwt_required()
+def search_users():
+    current_user_id = get_jwt_identity()
+    query = request.args.get('q', '').strip()
+
+    if not query or len(query) < 2:
+        return jsonify({'users': []})
+
+    # Case-insensitive search, exclude the current user
+    results = User.query.filter(
+        User.username.ilike(f'%{query}%'),
+        User.id != current_user_id
+    ).limit(20).all()
+
+    return jsonify({
+        'users': [
+            {
+                'id': u.id,
+                'username': u.username,
+                'profile_picture_url': u.profile_picture_url
+            }
+            for u in results
+        ]
+    })
+
 @bp.route('/settings', methods=['PUT'])
 @jwt_required()
 def update_settings():

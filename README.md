@@ -131,7 +131,7 @@ Mizaan/
 - [x] Phase 3: Prayer Time Integration
 - [x] Phase 4: Photo Check-in System
 - [x] Phase 5: Streak & Statistics
-- [ ] Phase 6: Friend System
+- [x] Phase 6: Friend System
 - [ ] Phase 7: Activity Feed
 - [ ] Phase 8: Notifications
 - [ ] Phase 9: Polish & UX
@@ -146,6 +146,7 @@ Mizaan/
 
 ### Users
 - `PUT /api/users/settings` - Update user settings (protected)
+- `GET /api/users/search?q=username` - Search for users by username (protected)
 
 ### Prayer Times
 - `GET /api/prayer-times` - Get today's prayer times (protected)
@@ -159,6 +160,13 @@ Mizaan/
 
 ### Statistics
 - `GET /api/stats` - Get current streak, longest streak, completion rates, and 30-day calendar (protected)
+
+### Friends
+- `POST /api/friends/request` - Send a friend request (protected)
+- `PUT /api/friends/:id/respond` - Accept or decline a friend request (protected)
+- `GET /api/friends` - Get accepted friends list (protected)
+- `GET /api/friends/requests` - Get incoming pending requests (protected)
+- `DELETE /api/friends/:id` - Remove a friend (protected)
 
 ### Health Check
 - `GET /api/health` - Check API status
