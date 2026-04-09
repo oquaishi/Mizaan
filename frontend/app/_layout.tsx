@@ -10,6 +10,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/src/context/AuthContext';
 import { PrayerTimesProvider } from '@/src/context/PrayerTimesContext';
+import { FriendRequestProvider } from '@/src/context/FriendRequestContext';
 import { userAPI } from '@/src/services/api';
 
 Notifications.setNotificationHandler({
@@ -89,7 +90,9 @@ export default function RootLayout() {
     <PaperProvider>
       <AuthProvider>
         <PrayerTimesProvider>
-          <RootLayoutNav />
+          <FriendRequestProvider>
+            <RootLayoutNav />
+          </FriendRequestProvider>
         </PrayerTimesProvider>
       </AuthProvider>
     </PaperProvider>

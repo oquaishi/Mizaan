@@ -15,6 +15,7 @@ import {
   FriendRequest,
   SearchUser,
 } from '../../src/services/friendsService';
+import { useFriendRequests } from '../../src/context/FriendRequestContext';
 
 type Tab = 'friends' | 'requests' | 'search';
 
@@ -28,6 +29,7 @@ export default function FriendsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const { refreshCount } = useFriendRequests();
 
   useEffect(() => {
     loadData();
@@ -88,7 +90,7 @@ export default function FriendsScreen() {
     setActionLoading(friendshipId);
     try {
       await friendsAPI.respond(friendshipId, action);
-      await loadData();
+      await Promise.all([loadData(), refreshCount()]);
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.error || 'Failed to respond');
     } finally {
