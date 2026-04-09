@@ -4,6 +4,7 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { PaperProvider } from 'react-native-paper';
 import { Platform } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
 import 'react-native-reanimated';
 
@@ -87,14 +88,16 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <PaperProvider>
-      <AuthProvider>
-        <PrayerTimesProvider>
-          <FriendRequestProvider>
-            <RootLayoutNav />
-          </FriendRequestProvider>
-        </PrayerTimesProvider>
-      </AuthProvider>
-    </PaperProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PaperProvider>
+        <AuthProvider>
+          <PrayerTimesProvider>
+            <FriendRequestProvider>
+              <RootLayoutNav />
+            </FriendRequestProvider>
+          </PrayerTimesProvider>
+        </AuthProvider>
+      </PaperProvider>
+    </GestureHandlerRootView>
   );
 }

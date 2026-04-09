@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,10 +6,11 @@ import {
   Image,
   Alert,
   RefreshControl,
-  Platform,
+  TouchableOpacity,
 } from 'react-native';
 import { Text, Card, Button, ActivityIndicator, ProgressBar } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
+import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { prayerAPI, TodaysPrayers } from '../../src/services/prayerService';
 
 const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
@@ -19,6 +20,9 @@ export default function CheckInScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [checkingIn, setCheckingIn] = useState<string | null>(null);
+  const [selectedPrayer, setSelectedPrayer] = useState<string | null>(null);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = ['32%'];
 
   useEffect(() => {
     loadTodaysPrayers();
@@ -42,24 +46,22 @@ export default function CheckInScreen() {
   };
 
   const handleCheckIn = (prayerName: string) => {
-    if (Platform.OS === 'web') {
-      submitCheckIn(prayerName);
-      return;
-    }
-
-    Alert.alert(
-      `Check in for ${prayerName}`,
-      'Would you like to add a photo?',
-      [
-        { text: 'No Photo', onPress: () => submitCheckIn(prayerName) },
-        { text: 'Take Photo', onPress: () => takePhoto(prayerName) },
-        { text: 'Choose from Gallery', onPress: () => pickImage(prayerName) },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+    setSelectedPrayer(prayerName);
+    bottomSheetRef.current?.expand();
   };
 
+  const closeSheet = () => {
+    bottomSheetRef.current?.close();
+    setSelectedPrayer(null);
+  };
+
+  const renderBackdrop = useCallback(
+    (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
+    []
+  );
+
   const takePhoto = async (prayerName: string) => {
+    closeSheet();
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission needed', 'Camera access is required to take photos');
@@ -79,6 +81,7 @@ export default function CheckInScreen() {
   };
 
   const pickImage = async (prayerName: string) => {
+    closeSheet();
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [1, 1],
@@ -116,8 +119,9 @@ export default function CheckInScreen() {
   const progress = todayData ? todayData.total_completed / 5 : 0;
 
   return (
+    <View style={styles.container}>
     <ScrollView
-      style={styles.container}
+      style={styles.scrollView}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
@@ -208,6 +212,38 @@ export default function CheckInScreen() {
         })}
       </View>
     </ScrollView>
+
+    <BottomSheet
+      ref={bottomSheetRef}
+      index={-1}
+      snapPoints={snapPoints}
+      enablePanDownToClose
+      backdropComponent={renderBackdrop}
+      onClose={() => setSelectedPrayer(null)}
+    >
+      <BottomSheetView style={styles.sheetContent}>
+        <Text style={styles.sheetTitle}>
+          {selectedPrayer ? `Check in for ${selectedPrayer}` : ''}
+        </Text>
+        <Text style={styles.sheetSubtitle}>Add a photo to your check-in?</Text>
+
+        <TouchableOpacity style={styles.sheetOption} onPress={() => { closeSheet(); if (selectedPrayer) submitCheckIn(selectedPrayer); }}>
+          <Text style={styles.sheetOptionIcon}>🤲</Text>
+          <Text style={styles.sheetOptionText}>No photo — just check in</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.sheetOption} onPress={() => selectedPrayer && takePhoto(selectedPrayer)}>
+          <Text style={styles.sheetOptionIcon}>📷</Text>
+          <Text style={styles.sheetOptionText}>Take a photo</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.sheetOption} onPress={() => selectedPrayer && pickImage(selectedPrayer)}>
+          <Text style={styles.sheetOptionIcon}>🖼️</Text>
+          <Text style={styles.sheetOptionText}>Choose from gallery</Text>
+        </TouchableOpacity>
+      </BottomSheetView>
+    </BottomSheet>
+    </View>
   );
 }
 
@@ -215,6 +251,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  scrollView: {
+    flex: 1,
   },
   centered: {
     flex: 1,
@@ -352,5 +391,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#e8f5e9',
     textAlign: 'center',
+  },
+  sheetContent: {
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+  },
+  sheetTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  sheetSubtitle: {
+    fontSize: 14,
+    color: '#888',
+    marginBottom: 20,
+  },
+  sheetOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  sheetOptionIcon: {
+    fontSize: 22,
+    marginRight: 16,
+  },
+  sheetOptionText: {
+    fontSize: 16,
+    color: '#1a1a1a',
   },
 });
