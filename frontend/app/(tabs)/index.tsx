@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Text, Card, ActivityIndicator } from 'react-native-paper';
+import { Text, Card, ActivityIndicator, Button } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 import { feedAPI, FeedItem } from '../../src/services/feedService';
 
 function timeAgo(isoString: string): string {
@@ -74,6 +75,7 @@ function FeedCard({ item, onReact }: { item: FeedItem; onReact: (id: string, rea
 }
 
 export default function FeedScreen() {
+  const router = useRouter();
   const [feed, setFeed] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -169,10 +171,18 @@ export default function FeedScreen() {
         onEndReachedThreshold={0.3}
         ListEmptyComponent={
           <View style={styles.empty}>
+            <Text style={styles.emptyIcon}>🕌</Text>
             <Text style={styles.emptyText}>No activity yet</Text>
             <Text style={styles.emptySubtext}>
-              Add friends and their prayer check-ins will appear here
+              Add friends to see their prayer check-ins here
             </Text>
+            <Button
+              mode="contained"
+              onPress={() => router.push('/(tabs)/friends')}
+              style={styles.emptyButton}
+            >
+              Find Friends
+            </Button>
           </View>
         }
         ListFooterComponent={
@@ -310,10 +320,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
+    paddingTop: 80,
+  },
+  emptyIcon: {
+    fontSize: 56,
+    marginBottom: 16,
   },
   emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
     color: '#333',
     marginBottom: 8,
   },
@@ -321,5 +336,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
     textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 24,
+  },
+  emptyButton: {
+    backgroundColor: '#6750a4',
+    paddingHorizontal: 8,
   },
 });

@@ -176,8 +176,9 @@ export default function FriendsScreen() {
         >
           {friends.length === 0 ? (
             <View style={styles.empty}>
+              <Text style={styles.emptyIcon}>👥</Text>
               <Text style={styles.emptyText}>No friends yet</Text>
-              <Text style={styles.emptySubtext}>Search for people to add as friends</Text>
+              <Text style={styles.emptySubtext}>Search for people you know and build your accountability network</Text>
               <Button
                 mode="contained"
                 onPress={() => setActiveTab('search')}
@@ -227,8 +228,9 @@ export default function FriendsScreen() {
         >
           {requests.length === 0 ? (
             <View style={styles.empty}>
+              <Text style={styles.emptyIcon}>📬</Text>
               <Text style={styles.emptyText}>No pending requests</Text>
-              <Text style={styles.emptySubtext}>Friend requests will appear here</Text>
+              <Text style={styles.emptySubtext}>When someone sends you a friend request it will appear here</Text>
             </View>
           ) : (
             requests.map((req) => (
@@ -449,9 +451,13 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingHorizontal: 32,
   },
+  emptyIcon: {
+    fontSize: 52,
+    marginBottom: 16,
+  },
   emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
     color: '#333',
     marginBottom: 8,
   },
@@ -459,7 +465,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
     textAlign: 'center',
-    marginBottom: 20,
+    lineHeight: 20,
+    marginBottom: 24,
   },
   emptyButton: {
     backgroundColor: '#6750a4',

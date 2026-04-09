@@ -146,6 +146,14 @@ export default function CheckInScreen() {
         </Card.Content>
       </Card>
 
+      {todayData?.total_completed === 5 && (
+        <View style={styles.completionBanner}>
+          <Text style={styles.completionEmoji}>🎉</Text>
+          <Text style={styles.completionTitle}>All prayers complete!</Text>
+          <Text style={styles.completionSubtext}>MashaAllah — you completed all 5 prayers today</Text>
+        </View>
+      )}
+
       <View style={styles.prayerList}>
         {PRAYERS.map((prayer) => {
           const isCompleted = todayData?.completed_names.includes(prayer);
@@ -320,5 +328,29 @@ const styles = StyleSheet.create({
   },
   checkInButtonLabel: {
     fontSize: 14,
+  },
+  completionBanner: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 4,
+    padding: 20,
+    backgroundColor: '#4caf50',
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  completionEmoji: {
+    fontSize: 40,
+    marginBottom: 8,
+  },
+  completionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  completionSubtext: {
+    fontSize: 14,
+    color: '#e8f5e9',
+    textAlign: 'center',
   },
 });
