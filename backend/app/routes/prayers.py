@@ -57,6 +57,29 @@ def check_in_prayer():
     db.session.add(prayer)
     db.session.commit()
 
+    # Notify friends
+    try:
+        from app.models.friendship import Friendship
+        from app.services.notification_service import NotificationService
+        from sqlalchemy import or_
+
+        current_user = User.query.get(user_id)
+        friendships = Friendship.query.filter(
+            or_(
+                Friendship.requester_id == user_id,
+                Friendship.addressee_id == user_id
+            ),
+            Friendship.status == 'accepted'
+        ).all()
+
+        for f in friendships:
+            friend_id = f.addressee_id if f.requester_id == user_id else f.requester_id
+            friend = User.query.get(friend_id)
+            if friend:
+                NotificationService.send_friend_activity_alert(friend, current_user.username, prayer_name)
+    except Exception:
+        pass
+
     return jsonify({
         'message': f'{prayer_name} checked in successfully!',
         'prayer': prayer.to_dict()

@@ -133,7 +133,7 @@ Mizaan/
 - [x] Phase 5: Streak & Statistics
 - [x] Phase 6: Friend System
 - [x] Phase 7: Activity Feed
-- [ ] Phase 8: Notifications
+- [x] Phase 8: Notifications
 - [ ] Phase 9: Polish & UX
 - [ ] Phase 10: Testing & Deployment
 
@@ -172,6 +172,10 @@ Mizaan/
 - `GET /api/feed` - Get paginated friend activity feed (protected)
 - `POST /api/feed/:prayer_id/react` - React to a friend's prayer (protected)
 - `DELETE /api/feed/:prayer_id/react` - Remove a reaction (protected)
+
+### Notifications
+- `PUT /api/users/notification-token` - Register device push token (protected)
+- `PUT /api/users/notification-settings` - Update notification preferences (protected)
 
 ### Health Check
 - `GET /api/health` - Check API status

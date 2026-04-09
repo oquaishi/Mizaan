@@ -10,6 +10,11 @@ interface User {
   location?: string;
   timezone?: string;
   calculation_method?: string;
+  notifications_enabled?: boolean;
+  prayer_reminders_enabled?: boolean;
+  missed_prayer_alerts?: boolean;
+  friend_activity_alerts?: boolean;
+  reminder_minutes_before?: number;
 }
 
 interface AuthContextType {

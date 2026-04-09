@@ -88,6 +88,22 @@ export const userAPI = {
     const response = await api.put('/users/settings', settings);
     return response.data;
   },
+
+  updateNotificationToken: async (token: string) => {
+    const response = await api.put('/users/notification-token', { token });
+    return response.data;
+  },
+
+  updateNotificationSettings: async (settings: {
+    notifications_enabled?: boolean;
+    prayer_reminders_enabled?: boolean;
+    missed_prayer_alerts?: boolean;
+    friend_activity_alerts?: boolean;
+    reminder_minutes_before?: number;
+  }) => {
+    const response = await api.put('/users/notification-settings', settings);
+    return response.data;
+  },
 };
 
 export default api;

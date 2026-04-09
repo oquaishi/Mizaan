@@ -31,6 +31,9 @@ def create_app(config_class=Config):
     def health():
         return {'status': 'healthy', 'message': 'Mizaan API is running'}
 
+    from app.services.scheduler_service import start_scheduler
+    start_scheduler(app)
+
     return app
 
 from app.models import user

@@ -15,6 +15,11 @@ class User(db.Model):
     timezone = db.Column(db.String(50))
     calculation_method = db.Column(db.String(20), default='ISNA')
     fcm_token = db.Column(db.String(255))
+    notifications_enabled = db.Column(db.Boolean, default=True)
+    prayer_reminders_enabled = db.Column(db.Boolean, default=True)
+    reminder_minutes_before = db.Column(db.Integer, default=15)
+    missed_prayer_alerts = db.Column(db.Boolean, default=True)
+    friend_activity_alerts = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -33,5 +38,10 @@ class User(db.Model):
             'location': self.location,
             'timezone': self.timezone,
             'calculation_method': self.calculation_method,
+            'notifications_enabled': self.notifications_enabled,
+            'prayer_reminders_enabled': self.prayer_reminders_enabled,
+            'reminder_minutes_before': self.reminder_minutes_before,
+            'missed_prayer_alerts': self.missed_prayer_alerts,
+            'friend_activity_alerts': self.friend_activity_alerts,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }

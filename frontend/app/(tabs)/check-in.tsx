@@ -6,6 +6,7 @@ import {
   Image,
   Alert,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import { Text, Card, Button, ActivityIndicator, ProgressBar } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
@@ -41,6 +42,11 @@ export default function CheckInScreen() {
   };
 
   const handleCheckIn = (prayerName: string) => {
+    if (Platform.OS === 'web') {
+      submitCheckIn(prayerName);
+      return;
+    }
+
     Alert.alert(
       `Check in for ${prayerName}`,
       'Would you like to add a photo?',

@@ -80,3 +80,58 @@ def update_settings():
         'message': 'Settings updated successfully',
         'user': user.to_dict()
     }), 200
+
+
+@bp.route('/notification-token', methods=['PUT'])
+@jwt_required()
+def update_notification_token():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+    token = data.get('token')
+
+    if not token:
+        return jsonify({'error': 'Token is required'}), 400
+
+    user.fcm_token = token
+    db.session.commit()
+
+    return jsonify({'message': 'Token updated'}), 200
+
+
+@bp.route('/notification-settings', methods=['PUT'])
+@jwt_required()
+def update_notification_settings():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+
+    bool_fields = [
+        'notifications_enabled',
+        'prayer_reminders_enabled',
+        'missed_prayer_alerts',
+        'friend_activity_alerts',
+    ]
+    for field in bool_fields:
+        if field in data and isinstance(data[field], bool):
+            setattr(user, field, data[field])
+
+    if 'reminder_minutes_before' in data:
+        minutes = data['reminder_minutes_before']
+        if isinstance(minutes, int) and 5 <= minutes <= 60:
+            user.reminder_minutes_before = minutes
+
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Notification settings updated',
+        'user': user.to_dict()
+    }), 200
