@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Text, Card, ActivityIndicator, Button } from 'react-native-paper';
+import { Text, Card, Button, ActivityIndicator } from 'react-native-paper';
+import { FeedSkeletonCard } from '../../src/components/SkeletonLoader';
 import { useRouter } from 'expo-router';
 import { feedAPI, FeedItem } from '../../src/services/feedService';
 
@@ -142,15 +143,6 @@ export default function FeedScreen() {
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#6750a4" />
-        <Text style={styles.loadingText}>Loading feed...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -158,7 +150,15 @@ export default function FeedScreen() {
         <Text style={styles.subtitle}>Your friends' prayers</Text>
       </View>
 
-      <FlatList
+      {loading ? (
+        <View style={styles.skeletonList}>
+          <FeedSkeletonCard />
+          <FeedSkeletonCard />
+          <FeedSkeletonCard />
+        </View>
+      ) : null}
+
+      {!loading && <FlatList
         data={feed}
         keyExtractor={(item) => item.prayer_id}
         renderItem={({ item }) => (
@@ -191,7 +191,7 @@ export default function FeedScreen() {
           ) : null
         }
         contentContainerStyle={feed.length === 0 ? styles.emptyContainer : styles.listContent}
-      />
+      />}
     </View>
   );
 }
@@ -201,15 +201,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  loadingText: {
-    marginTop: 12,
-    color: '#666',
+  skeletonList: {
+    padding: 16,
   },
   header: {
     padding: 20,

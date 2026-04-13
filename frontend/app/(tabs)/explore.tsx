@@ -5,7 +5,8 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-import { Text, Card, ActivityIndicator } from 'react-native-paper';
+import { Text, Card } from 'react-native-paper';
+import { StatsSkeletonScreen } from '../../src/components/SkeletonLoader';
 import { statsAPI, Stats, CalendarDay } from '../../src/services/statsService';
 
 export default function StatisticsScreen() {
@@ -42,15 +43,6 @@ export default function StatisticsScreen() {
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#6750a4" />
-        <Text style={styles.loadingText}>Loading statistics...</Text>
-      </View>
-    );
-  }
-
   return (
     <ScrollView
       style={styles.container}
@@ -60,6 +52,8 @@ export default function StatisticsScreen() {
         <Text style={styles.title}>Statistics</Text>
         <Text style={styles.subtitle}>Your prayer journey</Text>
       </View>
+
+      {loading ? <StatsSkeletonScreen /> : <>
 
       {/* Streak Cards */}
       <View style={styles.streakRow}>
@@ -134,6 +128,8 @@ export default function StatisticsScreen() {
           </View>
         </Card.Content>
       </Card>
+
+      </>}
     </ScrollView>
   );
 }
@@ -142,16 +138,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  loadingText: {
-    marginTop: 12,
-    color: '#666',
   },
   header: {
     padding: 20,

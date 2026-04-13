@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Card, Button, Text, ActivityIndicator, List, Divider } from 'react-native-paper';
+import { Card, Button, Text, List, Divider } from 'react-native-paper';
+import { PrayerTimesSkeletonScreen } from '@/src/components/SkeletonLoader';
 import * as Location from 'expo-location';
 import { usePrayerTimes } from '@/src/context/PrayerTimesContext';
 import { userAPI } from '@/src/services/api';
@@ -103,10 +104,9 @@ export default function PrayerTimesScreen() {
   // Show loading state
   if (isLoading && !prayerTimes) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" />
-        <Text style={styles.loadingText}>Loading prayer times...</Text>
-      </View>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <PrayerTimesSkeletonScreen />
+      </ScrollView>
     );
   }
 
@@ -315,9 +315,5 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 8,
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
   },
 });

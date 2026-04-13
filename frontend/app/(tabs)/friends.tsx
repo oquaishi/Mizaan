@@ -8,7 +8,8 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import { Text, Card, Button, ActivityIndicator, Chip } from 'react-native-paper';
+import { Text, Card, Button, Chip } from 'react-native-paper';
+import { FriendSkeletonCard } from '../../src/components/SkeletonLoader';
 import {
   friendsAPI,
   Friend,
@@ -123,15 +124,6 @@ export default function FriendsScreen() {
     );
   };
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#6750a4" />
-        <Text style={styles.loadingText}>Loading friends...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -174,7 +166,13 @@ export default function FriendsScreen() {
           style={styles.content}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
-          {friends.length === 0 ? (
+          {loading ? (
+            <>
+              <FriendSkeletonCard />
+              <FriendSkeletonCard />
+              <FriendSkeletonCard />
+            </>
+          ) : friends.length === 0 ? (
             <View style={styles.empty}>
               <Text style={styles.emptyIcon}>👥</Text>
               <Text style={styles.emptyText}>No friends yet</Text>
@@ -337,16 +335,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  loadingText: {
-    marginTop: 12,
-    color: '#666',
   },
   header: {
     padding: 20,
