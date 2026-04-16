@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { Text, Card, Button, ActivityIndicator } from 'react-native-paper';
+import * as Haptics from 'expo-haptics';
 import { FeedSkeletonCard } from '../../src/components/SkeletonLoader';
 import { useRouter } from 'expo-router';
 import { feedAPI, FeedItem } from '../../src/services/feedService';
@@ -120,6 +121,7 @@ export default function FeedScreen() {
   };
 
   const handleReact = async (prayerId: string, userReacted: boolean) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       let updatedCount: number;
 

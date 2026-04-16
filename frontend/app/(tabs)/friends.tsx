@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { Text, Card, Button, Chip } from 'react-native-paper';
 import { FriendSkeletonCard } from '../../src/components/SkeletonLoader';
 import {
@@ -76,8 +77,10 @@ export default function FriendsScreen() {
 
   const handleSendRequest = async (userId: string, username: string) => {
     setActionLoading(userId);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
       await friendsAPI.sendRequest(userId);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert('Request Sent', `Friend request sent to ${username}`);
       setSearchResults(prev => prev.filter(u => u.id !== userId));
     } catch (error: any) {
@@ -91,6 +94,11 @@ export default function FriendsScreen() {
     setActionLoading(friendshipId);
     try {
       await friendsAPI.respond(friendshipId, action);
+      Haptics.notificationAsync(
+        action === 'accept'
+          ? Haptics.NotificationFeedbackType.Success
+          : Haptics.NotificationFeedbackType.Warning
+      );
       await Promise.all([loadData(), refreshCount()]);
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.error || 'Failed to respond');
@@ -112,6 +120,7 @@ export default function FriendsScreen() {
             setActionLoading(friendshipId);
             try {
               await friendsAPI.removeFriend(friendshipId);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
               setFriends(prev => prev.filter(f => f.friendship_id !== friendshipId));
             } catch (error: any) {
               Alert.alert('Error', error.response?.data?.error || 'Failed to remove friend');
