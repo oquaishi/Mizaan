@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Switch } from 'react-native';
+import { View, StyleSheet, ScrollView, Switch, TouchableOpacity } from 'react-native';
 import { Card, Button, Text, List, Divider, Snackbar, RadioButton } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/context/AuthContext';
 import { userAPI } from '@/src/services/api';
 import { usePrayerTimes } from '@/src/context/PrayerTimesContext';
@@ -18,6 +19,7 @@ const REMINDER_OPTIONS = [5, 10, 15, 20, 30];
 export default function SettingsScreen() {
   const { user, logout, refreshUser } = useAuth();
   const { refreshPrayerTimes } = usePrayerTimes();
+  const router = useRouter();
   const [selectedMethod, setSelectedMethod] = useState(user?.calculation_method || 'ISNA');
   const [isUpdating, setIsUpdating] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -114,6 +116,10 @@ export default function SettingsScreen() {
             <Text variant="bodyMedium" style={styles.label}>Timezone:</Text>
             <Text variant="bodyMedium" style={styles.value}>{user?.timezone || 'Not set'}</Text>
           </View>
+          <Divider style={styles.divider} />
+          <TouchableOpacity style={styles.profileLink} onPress={() => router.push('/profile')}>
+            <Text variant="bodyMedium" style={styles.profileLinkText}>View Prayer Stats →</Text>
+          </TouchableOpacity>
         </Card.Content>
       </Card>
 
@@ -353,6 +359,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 8,
     marginTop: 8,
+  },
+  profileLink: {
+    paddingTop: 12,
+    alignItems: 'flex-end',
+  },
+  profileLinkText: {
+    color: '#6750a4',
+    fontWeight: '600',
   },
   logoutButton: {
     borderColor: '#d32f2f',
