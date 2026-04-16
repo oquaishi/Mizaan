@@ -45,7 +45,7 @@ async function registerForPushNotifications() {
 }
 
 function RootLayoutNav() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
@@ -53,13 +53,16 @@ function RootLayoutNav() {
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === '(tabs)';
+    const inOnboarding = segments[0] === 'onboarding';
 
-    if (!isAuthenticated && inAuthGroup) {
+    if (!isAuthenticated && (inAuthGroup || inOnboarding)) {
       router.replace('/login');
-    } else if (isAuthenticated && !inAuthGroup) {
+    } else if (isAuthenticated && !user?.location && !inOnboarding) {
+      router.replace('/onboarding');
+    } else if (isAuthenticated && user?.location && !inAuthGroup) {
       router.replace('/(tabs)');
     }
-  }, [isAuthenticated, segments, isLoading]);
+  }, [isAuthenticated, isLoading, user?.location, segments]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
