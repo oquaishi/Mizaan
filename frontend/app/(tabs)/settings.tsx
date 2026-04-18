@@ -298,6 +298,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginBottom: 12,
     fontWeight: 'bold',
+    color: '#6B4226',
   },
   description: {
     color: '#666',

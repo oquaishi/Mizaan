@@ -205,8 +205,8 @@ export default function PrayerTimesScreen() {
                   )}
                   style={
                     prayer === prayerTimes.current_prayer
-                      ? styles.currentPrayerItem
-                      : undefined
+                      ? [styles.currentPrayerItem, styles.prayerRow]
+                      : styles.prayerRow
                   }
                 />
                 {index < 4 && <Divider />}
@@ -276,6 +276,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginBottom: 4,
     fontWeight: 'bold',
+    color: '#6B4226',
   },
   dateText: {
     color: '#666',
@@ -299,6 +300,10 @@ const styles = StyleSheet.create({
   },
   currentPrayerItem: {
     backgroundColor: '#E8F5EE',
+  },
+  prayerRow: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#6B4226',
   },
   infoText: {
     color: '#666',

@@ -365,11 +365,13 @@ const styles = StyleSheet.create({
   prayerCard: {
     marginBottom: 12,
     backgroundColor: '#fff',
+    borderLeftWidth: 4,
+    borderLeftColor: '#6B4226',
   },
   completedCard: {
     backgroundColor: '#e8f5e9',
     borderLeftWidth: 4,
-    borderLeftColor: '#4caf50',
+    borderLeftColor: '#6B4226',
   },
   cardContent: {
     flexDirection: 'row',

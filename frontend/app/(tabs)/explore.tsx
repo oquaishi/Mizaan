@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   },
   rateLabel: {
     fontSize: 13,
-    color: '#666',
+    color: '#6B4226',
     marginTop: 4,
   },
   calendarCard: {
@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
+    color: '#6B4226',
   },
   legend: {
     flexDirection: 'row',
