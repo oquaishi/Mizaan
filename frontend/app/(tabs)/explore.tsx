@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   View,
   StyleSheet,
@@ -65,13 +66,18 @@ export default function StatisticsScreen() {
           </Card.Content>
         </Card>
 
-        <Card style={[styles.streakCard, styles.longestStreakCard]}>
-          <Card.Content style={styles.streakContent}>
+        <View style={[styles.streakCard, styles.longestStreakCard]}>
+          <LinearGradient
+            colors={['#6B4226', '#A07818']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.streakGradient}
+          >
             <Text style={styles.streakNumber}>{stats?.longest_streak ?? 0}</Text>
             <Text style={styles.streakLabel}>Longest{'\n'}Streak</Text>
             <Text style={styles.streakEmoji}>🏆</Text>
-          </Card.Content>
-        </Card>
+          </LinearGradient>
+        </View>
       </View>
 
       {/* Completion Rate Cards */}
@@ -168,7 +174,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#065F46',
   },
   longestStreakCard: {
-    backgroundColor: '#C9A227',
+    overflow: 'hidden',
+    borderRadius: 12,
+    elevation: 4,
+  },
+  streakGradient: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
   streakContent: {
     alignItems: 'center',
