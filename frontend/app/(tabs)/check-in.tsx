@@ -11,12 +11,28 @@ import {
   Animated,
 } from 'react-native';
 import { Text, Card, Button, ActivityIndicator, ProgressBar } from 'react-native-paper';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { prayerAPI, TodaysPrayers } from '../../src/services/prayerService';
 
 const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+
+function formatDualDate(): string {
+  const now = new Date();
+  const gregorian = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  try {
+    const hijri = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(now);
+    return `${gregorian}  ·  ${hijri}`;
+  } catch {
+    return gregorian;
+  }
+}
 
 function CelebrationModal({ visible, onDismiss }: { visible: boolean; onDismiss: () => void }) {
   const scale = useRef(new Animated.Value(0.7)).current;
@@ -172,7 +188,7 @@ export default function CheckInScreen() {
     >
       <View style={styles.header}>
         <Text style={styles.title}>Today's Prayers</Text>
-        <Text style={styles.date}>{todayData?.date}</Text>
+        <Text style={styles.date}>{formatDualDate()}</Text>
       </View>
 
       <Card style={styles.progressCard}>
@@ -196,7 +212,7 @@ export default function CheckInScreen() {
 
       {todayData?.total_completed === 5 && (
         <View style={styles.completionBanner}>
-          <Text style={styles.completionEmoji}>🎉</Text>
+          <MaterialCommunityIcons name="mosque" size={52} color="#C9A227" style={styles.completionIcon} />
           <Text style={styles.completionTitle}>All prayers complete!</Text>
           <Text style={styles.completionSubtext}>MashaAllah — you completed all 5 prayers today</Text>
         </View>
@@ -317,6 +333,7 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     paddingTop: 60,
+    paddingBottom: 24,
     backgroundColor: '#065F46',
   },
   title: {
@@ -331,7 +348,7 @@ const styles = StyleSheet.create({
   },
   progressCard: {
     margin: 16,
-    marginTop: -20,
+    marginTop: 16,
     elevation: 4,
   },
   progressHeader: {
@@ -369,7 +386,7 @@ const styles = StyleSheet.create({
     borderLeftColor: '#6B4226',
   },
   completedCard: {
-    backgroundColor: '#e8f5e9',
+    backgroundColor: '#EAF4EE',
     borderLeftWidth: 4,
     borderLeftColor: '#6B4226',
   },
@@ -391,12 +408,12 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     fontSize: 20,
-    color: '#4caf50',
+    color: '#C9A227',
     marginLeft: 8,
     fontWeight: 'bold',
   },
   completedText: {
-    color: '#4caf50',
+    color: '#C9A227',
     marginTop: 4,
     fontWeight: '500',
   },
@@ -424,13 +441,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
     padding: 20,
-    backgroundColor: '#4caf50',
+    backgroundColor: '#065F46',
     borderRadius: 12,
     alignItems: 'center',
   },
-  completionEmoji: {
-    fontSize: 40,
-    marginBottom: 8,
+  completionIcon: {
+    marginBottom: 12,
   },
   completionTitle: {
     fontSize: 20,
@@ -440,7 +456,7 @@ const styles = StyleSheet.create({
   },
   completionSubtext: {
     fontSize: 14,
-    color: '#e8f5e9',
+    color: '#A8D5C2',
     textAlign: 'center',
   },
   sheetContent: {
