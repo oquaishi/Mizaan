@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { prayerAPI, TodaysPrayers } from '../../src/services/prayerService';
+import { usePrayerTimes } from '@/src/context/PrayerTimesContext';
 
 const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
@@ -32,6 +33,13 @@ function formatDualDate(): string {
   } catch {
     return gregorian;
   }
+}
+
+function formatTime12h(timeStr: string): string {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const h = hours % 12 || 12;
+  return `${h}:${minutes.toString().padStart(2, '0')} ${period}`;
 }
 
 function CelebrationModal({ visible, onDismiss }: { visible: boolean; onDismiss: () => void }) {
@@ -77,6 +85,21 @@ export default function CheckInScreen() {
   const [showCelebration, setShowCelebration] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = ['32%'];
+  const { prayerTimes } = usePrayerTimes();
+
+  const isPrayerAvailable = (prayerName: string): { available: boolean; availableAt: string } => {
+    if (!prayerTimes?.times) return { available: true, availableAt: '' };
+    const timeStr = prayerTimes.times[prayerName as keyof typeof prayerTimes.times];
+    if (!timeStr) return { available: true, availableAt: '' };
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const now = new Date();
+    const prayerTime = new Date();
+    prayerTime.setHours(hours, minutes, 0, 0);
+    return {
+      available: now >= prayerTime,
+      availableAt: formatTime12h(timeStr),
+    };
+  };
 
   useEffect(() => {
     loadTodaysPrayers();
@@ -224,6 +247,7 @@ export default function CheckInScreen() {
           const completedPrayer = todayData?.completed.find(
             (p) => p.prayer_name === prayer
           );
+          const { available, availableAt } = isPrayerAvailable(prayer);
 
           return (
             <Card
@@ -240,8 +264,10 @@ export default function CheckInScreen() {
                   </View>
                   {isCompleted ? (
                     <Text style={styles.completedText}>Completed</Text>
-                  ) : (
+                  ) : available ? (
                     <Text style={styles.pendingText}>Pending</Text>
+                  ) : (
+                    <Text style={styles.unavailableText}>Available at {availableAt}</Text>
                   )}
                 </View>
 
@@ -254,16 +280,22 @@ export default function CheckInScreen() {
                   ) : null}
 
                   {!isCompleted && (
-                    <Button
-                      mode="contained"
-                      onPress={() => handleCheckIn(prayer)}
-                      loading={checkingIn === prayer}
-                      disabled={checkingIn !== null}
-                      style={styles.checkInButton}
-                      labelStyle={styles.checkInButtonLabel}
-                    >
-                      Check In
-                    </Button>
+                    available ? (
+                      <Button
+                        mode="contained"
+                        onPress={() => handleCheckIn(prayer)}
+                        loading={checkingIn === prayer}
+                        disabled={checkingIn !== null}
+                        style={styles.checkInButton}
+                        labelStyle={styles.checkInButtonLabel}
+                      >
+                        Check In
+                      </Button>
+                    ) : (
+                      <View style={styles.lockedButton}>
+                        <Text style={styles.lockedButtonText}>Not yet</Text>
+                      </View>
+                    )
                   )}
                 </View>
               </Card.Content>
@@ -420,6 +452,22 @@ const styles = StyleSheet.create({
   pendingText: {
     color: '#ff9800',
     marginTop: 4,
+  },
+  unavailableText: {
+    color: '#999',
+    marginTop: 4,
+    fontSize: 13,
+  },
+  lockedButton: {
+    backgroundColor: '#E0E0E0',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  lockedButtonText: {
+    color: '#999',
+    fontSize: 14,
+    fontWeight: '500',
   },
   actionArea: {
     flexDirection: 'row',
