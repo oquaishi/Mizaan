@@ -2,7 +2,19 @@ import React, { useEffect } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { PaperProvider } from 'react-native-paper';
+import { MD3LightTheme, PaperProvider } from 'react-native-paper';
+
+const paperTheme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#2E7D52',
+    secondary: '#C9A227',
+    primaryContainer: '#E8F5EE',
+    secondaryContainer: '#FFF8E1',
+    outline: '#2E7D52',
+  },
+};
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
@@ -94,7 +106,7 @@ function RootLayoutNav() {
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PaperProvider>
+      <PaperProvider theme={paperTheme}>
         <AuthProvider>
           <PrayerTimesProvider>
             <FriendRequestProvider>

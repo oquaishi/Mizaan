@@ -234,7 +234,7 @@ export default function PrayerTimesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F0',
+    backgroundColor: '#FAF3E0',
   },
   content: {
     padding: 16,

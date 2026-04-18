@@ -201,7 +201,7 @@ export default function FeedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F0',
+    backgroundColor: '#FAF3E0',
   },
   skeletonList: {
     padding: 16,
