@@ -5,16 +5,16 @@ import pytz
 
 
 scheduler = BackgroundScheduler()
+_app = None  # set by start_scheduler
 
 
 def check_prayer_reminders():
-    from app import db
     from app.models.user import User
     from app.models.prayer import Prayer
     from app.services.notification_service import NotificationService
-    from app.services.prayer_time_service import PrayerTimeService
+    from app.services.prayer_times_service import PrayerTimesService
 
-    with db.app.app_context():
+    with _app.app_context():
         users = User.query.filter_by(notifications_enabled=True, prayer_reminders_enabled=True).all()
 
         for user in users:
@@ -26,12 +26,14 @@ def check_prayer_reminders():
                 now = datetime.now(tz)
                 today = now.date()
 
-                prayer_times = PrayerTimeService.get_prayer_times(user.location, today)
-                if not prayer_times:
+                lat, lon = map(float, user.location.split(','))
+                date_str = today.strftime('%d-%m-%Y')
+                result = PrayerTimesService.get_prayer_times(lat, lon, date_str)
+                if not result:
                     continue
+                prayer_times = result['times']  # {'Fajr': '06:15', ...}
 
                 prayer_names = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']
-                time_keys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
 
                 completed_prayers = {
                     p.prayer_name for p in Prayer.query.filter_by(
@@ -42,11 +44,11 @@ def check_prayer_reminders():
 
                 minutes_before = user.reminder_minutes_before or 15
 
-                for name, key in zip(prayer_names, time_keys):
+                for name in prayer_names:
                     if name in completed_prayers:
                         continue
 
-                    time_str = prayer_times.get(key)
+                    time_str = prayer_times.get(name)
                     if not time_str:
                         continue
 
@@ -63,17 +65,15 @@ def check_prayer_reminders():
 
 
 def check_missed_prayers():
-    from app import db
     from app.models.user import User
     from app.models.prayer import Prayer
     from app.services.notification_service import NotificationService
-    from app.services.prayer_time_service import PrayerTimeService
+    from app.services.prayer_times_service import PrayerTimesService
 
-    with db.app.app_context():
+    with _app.app_context():
         users = User.query.filter_by(notifications_enabled=True, missed_prayer_alerts=True).all()
 
         prayer_names = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']
-        time_keys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
 
         for user in users:
             if not user.fcm_token or not user.timezone or not user.location:
@@ -84,9 +84,12 @@ def check_missed_prayers():
                 now = datetime.now(tz)
                 today = now.date()
 
-                prayer_times = PrayerTimeService.get_prayer_times(user.location, today)
-                if not prayer_times:
+                lat, lon = map(float, user.location.split(','))
+                date_str = today.strftime('%d-%m-%Y')
+                result = PrayerTimesService.get_prayer_times(lat, lon, date_str)
+                if not result:
                     continue
+                prayer_times = result['times']  # {'Fajr': '06:15', ...}
 
                 completed_prayers = {
                     p.prayer_name for p in Prayer.query.filter_by(
@@ -95,11 +98,11 @@ def check_missed_prayers():
                     ).all()
                 }
 
-                for name, key in zip(prayer_names, time_keys):
+                for name in prayer_names:
                     if name in completed_prayers:
                         continue
 
-                    time_str = prayer_times.get(key)
+                    time_str = prayer_times.get(name)
                     if not time_str:
                         continue
 
@@ -117,6 +120,9 @@ def check_missed_prayers():
 
 
 def start_scheduler(app):
+    global _app
+    _app = app
+
     scheduler.add_job(
         check_prayer_reminders,
         CronTrigger(minute='*/2'),

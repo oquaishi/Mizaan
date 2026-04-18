@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Text, Card, Button, Chip } from 'react-native-paper';
+import { Text, Card, Button, Chip, ActivityIndicator } from 'react-native-paper';
 import { FriendSkeletonCard } from '../../src/components/SkeletonLoader';
 import {
   friendsAPI,

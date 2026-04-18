@@ -7,13 +7,50 @@ import {
   Alert,
   RefreshControl,
   TouchableOpacity,
+  Modal,
+  Animated,
 } from 'react-native';
 import { Text, Card, Button, ActivityIndicator, ProgressBar } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
+import * as Haptics from 'expo-haptics';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { prayerAPI, TodaysPrayers } from '../../src/services/prayerService';
 
 const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+
+function CelebrationModal({ visible, onDismiss }: { visible: boolean; onDismiss: () => void }) {
+  const scale = useRef(new Animated.Value(0.7)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      scale.setValue(0.7);
+      opacity.setValue(0);
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 1, useNativeDriver: true, tension: 50, friction: 7 }),
+        Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true }),
+      ]).start();
+
+      const timer = setTimeout(onDismiss, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
+  return (
+    <Modal visible={visible} transparent animationType="none" statusBarTranslucent>
+      <TouchableOpacity style={celebStyles.overlay} activeOpacity={1} onPress={onDismiss}>
+        <Animated.View style={[celebStyles.card, { transform: [{ scale }], opacity }]}>
+          <Text style={celebStyles.mosque}>🕌</Text>
+          <Text style={celebStyles.heading}>All 5 Prayers Complete!</Text>
+          <Text style={celebStyles.arabic}>ما شاء الله</Text>
+          <Text style={celebStyles.subtext}>May Allah accept your prayers today</Text>
+          <View style={celebStyles.divider} />
+          <Text style={celebStyles.hint}>Tap anywhere to continue</Text>
+        </Animated.View>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
 
 export default function CheckInScreen() {
   const [todayData, setTodayData] = useState<TodaysPrayers | null>(null);
@@ -21,6 +58,7 @@ export default function CheckInScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [checkingIn, setCheckingIn] = useState<string | null>(null);
   const [selectedPrayer, setSelectedPrayer] = useState<string | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = ['32%'];
 
@@ -38,6 +76,7 @@ export default function CheckInScreen() {
       setLoading(false);
       setRefreshing(false);
     }
+    return Promise.resolve();
   };
 
   const onRefresh = () => {
@@ -96,11 +135,16 @@ export default function CheckInScreen() {
 
   const submitCheckIn = async (prayerName: string, photo?: string) => {
     setCheckingIn(prayerName);
+    const willComplete = todayData?.total_completed === 4;
     try {
       await prayerAPI.checkIn(prayerName, photo);
-      Alert.alert('Success!', `${prayerName} checked in!`);
-      loadTodaysPrayers();
+      await loadTodaysPrayers();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (willComplete) {
+        setShowCelebration(true);
+      }
     } catch (error: any) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', error.response?.data?.error || 'Failed to check in');
     } finally {
       setCheckingIn(null);
@@ -243,6 +287,11 @@ export default function CheckInScreen() {
         </TouchableOpacity>
       </BottomSheetView>
     </BottomSheet>
+
+    <CelebrationModal
+      visible={showCelebration}
+      onDismiss={() => setShowCelebration(false)}
+    />
     </View>
   );
 }
@@ -421,5 +470,53 @@ const styles = StyleSheet.create({
   sheetOptionText: {
     fontSize: 16,
     color: '#1a1a1a',
+  },
+});
+
+const celebStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(10, 4, 30, 0.92)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  card: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  mosque: {
+    fontSize: 80,
+    marginBottom: 24,
+  },
+  heading: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  arabic: {
+    fontSize: 32,
+    color: '#c8a4ff',
+    marginBottom: 12,
+    fontWeight: '600',
+  },
+  subtext: {
+    fontSize: 16,
+    color: '#ccc',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  divider: {
+    width: 48,
+    height: 2,
+    backgroundColor: '#6750a4',
+    borderRadius: 2,
+    marginVertical: 28,
+  },
+  hint: {
+    fontSize: 13,
+    color: '#888',
   },
 });

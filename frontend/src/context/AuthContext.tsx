@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authAPI } from '../services/api';
+import { authAPI, setUnauthorizedCallback } from '../services/api';
 
 interface User {
   id: string;
@@ -35,6 +35,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Register logout callback so axios interceptor can clear auth state on 401
+  useEffect(() => {
+    setUnauthorizedCallback(() => setUser(null));
+  }, []);
 
   // Check if user is already logged in on app start
   useEffect(() => {
