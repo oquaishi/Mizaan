@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   brandName: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#1B5E38',
+    color: '#065F46',
     letterSpacing: 1,
   },
   brandArabic: {

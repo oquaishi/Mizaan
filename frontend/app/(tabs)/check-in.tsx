@@ -154,7 +154,7 @@ export default function CheckInScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2E7D52" />
+        <ActivityIndicator size="large" color="#047857" />
         <Text style={styles.loadingText}>Loading prayers...</Text>
       </View>
     );
@@ -185,7 +185,7 @@ export default function CheckInScreen() {
           </View>
           <ProgressBar
             progress={progress}
-            color="#2E7D52"
+            color="#047857"
             style={styles.progressBar}
           />
           <Text style={styles.progressPercent}>
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: '#1B5E38',
+    backgroundColor: '#065F46',
   },
   title: {
     fontSize: 28,
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
   progressCount: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2E7D52',
+    color: '#047857',
   },
   progressBar: {
     height: 8,
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   checkInButton: {
-    backgroundColor: '#2E7D52',
+    backgroundColor: '#047857',
   },
   checkInButtonLabel: {
     fontSize: 14,
@@ -511,7 +511,7 @@ const celebStyles = StyleSheet.create({
   divider: {
     width: 48,
     height: 2,
-    backgroundColor: '#2E7D52',
+    backgroundColor: '#047857',
     borderRadius: 2,
     marginVertical: 28,
   },

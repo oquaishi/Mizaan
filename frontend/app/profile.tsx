@@ -47,7 +47,7 @@ export default function ProfileScreen() {
 
         {/* Stats summary */}
         {loading ? (
-          <ActivityIndicator size="large" color="#2E7D52" style={styles.spinner} />
+          <ActivityIndicator size="large" color="#047857" style={styles.spinner} />
         ) : (
           <>
             <Text style={styles.sectionLabel}>Prayer Stats</Text>
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FBF8F2',
   },
   header: {
-    backgroundColor: '#1B5E38',
+    backgroundColor: '#065F46',
     paddingTop: 60,
     paddingBottom: 16,
     paddingHorizontal: 20,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: '#2E7D52',
+    backgroundColor: '#047857',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#2E7D52',
+    color: '#047857',
     marginBottom: 4,
   },
   statLabel: {

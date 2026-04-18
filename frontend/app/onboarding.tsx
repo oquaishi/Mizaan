@@ -111,7 +111,7 @@ export default function OnboardingScreen() {
             mode="text"
             onPress={() => setStep(3)}
             style={styles.nextButton}
-            textColor="#2E7D52"
+            textColor="#047857"
           >
             {locationDone ? 'Next →' : 'Skip this step'}
           </Button>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
   },
   dotActive: {
-    backgroundColor: '#2E7D52',
+    backgroundColor: '#047857',
     width: 24,
   },
   stepContainer: {
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   subheading: {
     fontSize: 18,
-    color: '#2E7D52',
+    color: '#047857',
     textAlign: 'center',
     fontWeight: '600',
     marginBottom: 20,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: 36,
   },
   primaryButton: {
-    backgroundColor: '#2E7D52',
+    backgroundColor: '#047857',
     borderRadius: 12,
     marginBottom: 12,
   },

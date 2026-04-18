@@ -8,11 +8,11 @@ const paperTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: '#2E7D52',
+    primary: '#047857',
     secondary: '#C9A227',
     primaryContainer: '#E8F5EE',
     secondaryContainer: '#FFF8E1',
-    outline: '#2E7D52',
+    outline: '#047857',
   },
 };
 import { Platform } from 'react-native';

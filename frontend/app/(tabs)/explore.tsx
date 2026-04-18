@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: '#1B5E38',
+    backgroundColor: '#065F46',
   },
   title: {
     fontSize: 28,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   currentStreakCard: {
-    backgroundColor: '#1B5E38',
+    backgroundColor: '#065F46',
   },
   longestStreakCard: {
     backgroundColor: '#C9A227',
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   rateNumber: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#2E7D52',
+    color: '#047857',
   },
   rateLabel: {
     fontSize: 13,

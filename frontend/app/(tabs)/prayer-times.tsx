@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   currentPrayerCard: {
-    backgroundColor: '#1B5E38',
+    backgroundColor: '#065F46',
   },
   currentLabel: {
     color: '#ffffff',
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   countdown: {
-    color: '#2E7D52',
+    color: '#047857',
     fontWeight: 'bold',
   },
   sectionTitle: {
@@ -290,12 +290,12 @@ const styles = StyleSheet.create({
   currentPrayerText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#2E7D52',
+    color: '#047857',
   },
   currentPrayerTime: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#2E7D52',
+    color: '#047857',
   },
   currentPrayerItem: {
     backgroundColor: '#E8F5EE',

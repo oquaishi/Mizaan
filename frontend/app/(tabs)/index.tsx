@@ -189,7 +189,7 @@ export default function FeedScreen() {
         }
         ListFooterComponent={
           loadingMore ? (
-            <ActivityIndicator size="small" color="#2E7D52" style={styles.footerSpinner} />
+            <ActivityIndicator size="small" color="#047857" style={styles.footerSpinner} />
           ) : null
         }
         contentContainerStyle={feed.length === 0 ? styles.emptyContainer : styles.listContent}
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: '#1B5E38',
+    backgroundColor: '#065F46',
   },
   title: {
     fontSize: 28,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#2E7D52',
+    backgroundColor: '#047857',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   },
   prayerBadgeText: {
     fontSize: 12,
-    color: '#2E7D52',
+    color: '#047857',
     fontWeight: '600',
   },
   photo: {
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   emptyButton: {
-    backgroundColor: '#2E7D52',
+    backgroundColor: '#047857',
     paddingHorizontal: 8,
   },
 });

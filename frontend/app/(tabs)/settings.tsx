@@ -138,7 +138,7 @@ export default function SettingsScreen() {
             <Switch
               value={notificationsEnabled}
               onValueChange={(v) => handleNotificationToggle('notifications_enabled', v, setNotificationsEnabled)}
-              trackColor={{ true: '#2E7D52' }}
+              trackColor={{ true: '#047857' }}
             />
           </View>
 
@@ -152,7 +152,7 @@ export default function SettingsScreen() {
             <Switch
               value={prayerReminders}
               onValueChange={(v) => handleNotificationToggle('prayer_reminders_enabled', v, setPrayerReminders)}
-              trackColor={{ true: '#2E7D52' }}
+              trackColor={{ true: '#047857' }}
               disabled={!notificationsEnabled}
             />
           </View>
@@ -186,7 +186,7 @@ export default function SettingsScreen() {
             <Switch
               value={missedAlerts}
               onValueChange={(v) => handleNotificationToggle('missed_prayer_alerts', v, setMissedAlerts)}
-              trackColor={{ true: '#2E7D52' }}
+              trackColor={{ true: '#047857' }}
               disabled={!notificationsEnabled}
             />
           </View>
@@ -201,7 +201,7 @@ export default function SettingsScreen() {
             <Switch
               value={friendAlerts}
               onValueChange={(v) => handleNotificationToggle('friend_activity_alerts', v, setFriendAlerts)}
-              trackColor={{ true: '#2E7D52' }}
+              trackColor={{ true: '#047857' }}
               disabled={!notificationsEnabled}
             />
           </View>
@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   profileLinkText: {
-    color: '#2E7D52',
+    color: '#047857',
     fontWeight: '600',
   },
   logoutButton: {
