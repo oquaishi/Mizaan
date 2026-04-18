@@ -299,7 +299,7 @@ export default function CheckInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF3E0',
+    backgroundColor: '#FBF8F2',
   },
   scrollView: {
     flex: 1,
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FAF3E0',
+    backgroundColor: '#FBF8F2',
   },
   loadingText: {
     marginTop: 12,

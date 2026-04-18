@@ -343,7 +343,7 @@ export default function FriendsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF3E0',
+    backgroundColor: '#FBF8F2',
   },
   header: {
     padding: 20,

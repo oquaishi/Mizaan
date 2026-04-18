@@ -134,7 +134,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF3E0',
+    backgroundColor: '#FBF8F2',
   },
   scrollContainer: {
     flexGrow: 1,
