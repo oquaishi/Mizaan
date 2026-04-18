@@ -234,7 +234,7 @@ export default function PrayerTimesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F5F5F0',
   },
   content: {
     padding: 16,
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   currentPrayerCard: {
-    backgroundColor: '#6200ea',
+    backgroundColor: '#1B5E38',
   },
   currentLabel: {
     color: '#ffffff',
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   countdown: {
-    color: '#6200ea',
+    color: '#2E7D52',
     fontWeight: 'bold',
   },
   sectionTitle: {
@@ -290,15 +290,15 @@ const styles = StyleSheet.create({
   currentPrayerText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#6200ea',
+    color: '#2E7D52',
   },
   currentPrayerTime: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#6200ea',
+    color: '#2E7D52',
   },
   currentPrayerItem: {
-    backgroundColor: '#f3e5f5',
+    backgroundColor: '#E8F5EE',
   },
   infoText: {
     color: '#666',

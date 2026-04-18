@@ -298,7 +298,7 @@ export default function FriendsScreen() {
           </View>
 
           {searchLoading && (
-            <ActivityIndicator size="small" color="#6750a4" style={styles.searchSpinner} />
+            <ActivityIndicator size="small" color="#2E7D52" style={styles.searchSpinner} />
           )}
 
           <ScrollView style={styles.searchResults}>
@@ -343,12 +343,12 @@ export default function FriendsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F5F5F0',
   },
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: '#6750a4',
+    backgroundColor: '#1B5E38',
   },
   title: {
     fontSize: 28,
@@ -368,14 +368,14 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: '#6750a4',
+    borderBottomColor: '#2E7D52',
   },
   tabText: {
     fontSize: 14,
     color: '#666',
   },
   activeTabText: {
-    color: '#6750a4',
+    color: '#2E7D52',
     fontWeight: '600',
   },
   content: {
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#6750a4',
+    backgroundColor: '#2E7D52',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -435,10 +435,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   acceptButton: {
-    backgroundColor: '#6750a4',
+    backgroundColor: '#2E7D52',
   },
   addButton: {
-    backgroundColor: '#6750a4',
+    backgroundColor: '#2E7D52',
   },
   addButtonLabel: {
     fontSize: 13,
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   emptyButton: {
-    backgroundColor: '#6750a4',
+    backgroundColor: '#2E7D52',
   },
   searchBar: {
     margin: 16,

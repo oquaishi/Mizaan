@@ -137,12 +137,12 @@ export default function StatisticsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F5F5F0',
   },
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: '#6750a4',
+    backgroundColor: '#1B5E38',
   },
   title: {
     fontSize: 28,
@@ -165,10 +165,10 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   currentStreakCard: {
-    backgroundColor: '#6750a4',
+    backgroundColor: '#1B5E38',
   },
   longestStreakCard: {
-    backgroundColor: '#3f3f3f',
+    backgroundColor: '#C9A227',
   },
   streakContent: {
     alignItems: 'center',
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   rateNumber: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#6750a4',
+    color: '#2E7D52',
   },
   rateLabel: {
     fontSize: 13,

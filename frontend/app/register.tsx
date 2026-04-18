@@ -67,6 +67,11 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
+          <View style={styles.brandHeader}>
+            <Text style={styles.brandEmoji}>🕌</Text>
+            <Text style={styles.brandName}>Mizaan</Text>
+            <Text style={styles.brandArabic}>ميزان</Text>
+          </View>
           <Text variant="displaySmall" style={styles.title}>
             Create Account
           </Text>
@@ -171,7 +176,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F5F5F0',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -183,10 +188,31 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     alignSelf: 'center',
   },
+  brandHeader: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  brandEmoji: {
+    fontSize: 52,
+    marginBottom: 8,
+  },
+  brandName: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#1B5E38',
+    letterSpacing: 1,
+  },
+  brandArabic: {
+    fontSize: 18,
+    color: '#C9A227',
+    fontWeight: '600',
+    marginTop: 2,
+  },
   title: {
     textAlign: 'center',
     marginBottom: 8,
     fontWeight: 'bold',
+    color: '#1a1a1a',
   },
   subtitle: {
     textAlign: 'center',
