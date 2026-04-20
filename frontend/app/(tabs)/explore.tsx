@@ -8,21 +8,26 @@ import {
 } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 import { StatsSkeletonScreen } from '../../src/components/SkeletonLoader';
-import { statsAPI, Stats, CalendarDay } from '../../src/services/statsService';
+import { statsAPI, Stats, CalendarDay, Leaderboard } from '../../src/services/statsService';
 
 export default function StatisticsScreen() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [leaderboard, setLeaderboard] = useState<Leaderboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    loadStats();
+    loadAll();
   }, []);
 
-  const loadStats = async () => {
+  const loadAll = async () => {
     try {
-      const data = await statsAPI.getStats();
-      setStats(data);
+      const [statsData, leaderboardData] = await Promise.all([
+        statsAPI.getStats(),
+        statsAPI.getLeaderboard(),
+      ]);
+      setStats(statsData);
+      setLeaderboard(leaderboardData);
     } catch (error) {
       console.error('Failed to load stats:', error);
     } finally {
@@ -33,7 +38,7 @@ export default function StatisticsScreen() {
 
   const onRefresh = () => {
     setRefreshing(true);
-    loadStats();
+    loadAll();
   };
 
   const getCalendarColor = (status: CalendarDay['status']) => {
@@ -134,6 +139,37 @@ export default function StatisticsScreen() {
           </View>
         </Card.Content>
       </Card>
+
+      {/* Leaderboard */}
+      {leaderboard && (
+        <Card style={styles.leaderboardCard}>
+          <Card.Content>
+            <View style={styles.leaderboardHeader}>
+              <Text style={styles.calendarTitle}>This Week's Leaderboard</Text>
+              <Text style={styles.resetText}>Resets in {leaderboard.days_until_reset}d</Text>
+            </View>
+
+            {leaderboard.leaderboard.map((entry) => (
+              <View
+                key={entry.user_id}
+                style={[styles.leaderboardRow, entry.is_me && styles.leaderboardRowMe]}
+              >
+                <Text style={[styles.rankText, entry.rank === 1 && styles.rank1, entry.rank === 2 && styles.rank2, entry.rank === 3 && styles.rank3]}>
+                  {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `#${entry.rank}`}
+                </Text>
+                <Text style={[styles.leaderboardUsername, entry.is_me && styles.leaderboardUsernameMe]}>
+                  {entry.username}{entry.is_me ? ' (you)' : ''}
+                </Text>
+                <Text style={styles.leaderboardCount}>{entry.count} prayers</Text>
+              </View>
+            ))}
+
+            {leaderboard.leaderboard.length === 0 && (
+              <Text style={styles.leaderboardEmpty}>Add friends to start competing</Text>
+            )}
+          </Card.Content>
+        </Card>
+      )}
 
       </>}
     </ScrollView>
@@ -274,5 +310,66 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#999',
     marginTop: 2,
+  },
+  leaderboardCard: {
+    margin: 16,
+    marginTop: 8,
+    marginBottom: 24,
+    backgroundColor: '#fff',
+  },
+  leaderboardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  resetText: {
+    fontSize: 12,
+    color: '#999',
+  },
+  leaderboardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  leaderboardRowMe: {
+    backgroundColor: '#EAF4EE',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    marginHorizontal: -8,
+  },
+  rankText: {
+    fontSize: 16,
+    width: 36,
+    textAlign: 'center',
+    color: '#999',
+    fontWeight: '600',
+  },
+  rank1: { fontSize: 20 },
+  rank2: { fontSize: 20 },
+  rank3: { fontSize: 20 },
+  leaderboardUsername: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#1a1a1a',
+    marginLeft: 8,
+  },
+  leaderboardUsernameMe: {
+    color: '#047857',
+    fontWeight: '700',
+  },
+  leaderboardCount: {
+    fontSize: 14,
+    color: '#6B4226',
+    fontWeight: '600',
+  },
+  leaderboardEmpty: {
+    textAlign: 'center',
+    color: '#999',
+    fontSize: 14,
+    paddingVertical: 16,
   },
 });

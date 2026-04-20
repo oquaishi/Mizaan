@@ -14,9 +14,27 @@ export interface Stats {
   calendar: CalendarDay[];
 }
 
+export interface LeaderboardEntry {
+  rank: number;
+  user_id: string;
+  username: string;
+  count: number;
+  is_me: boolean;
+}
+
+export interface Leaderboard {
+  leaderboard: LeaderboardEntry[];
+  week_start: string;
+  days_until_reset: number;
+}
+
 export const statsAPI = {
   getStats: async (): Promise<Stats> => {
     const response = await api.get('/stats');
+    return response.data;
+  },
+  getLeaderboard: async (): Promise<Leaderboard> => {
+    const response = await api.get('/stats/leaderboard');
     return response.data;
   },
 };
