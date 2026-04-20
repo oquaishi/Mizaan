@@ -17,6 +17,7 @@ import * as Haptics from 'expo-haptics';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { prayerAPI, TodaysPrayers } from '../../src/services/prayerService';
 import { usePrayerTimes } from '@/src/context/PrayerTimesContext';
+import { useRouter } from 'expo-router';
 
 const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
@@ -86,6 +87,7 @@ export default function CheckInScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = ['32%'];
   const { prayerTimes } = usePrayerTimes();
+  const router = useRouter();
 
   const isPrayerAvailable = (prayerName: string): { available: boolean; availableAt: string } => {
     if (!prayerTimes?.times) return { available: true, availableAt: '' };
@@ -210,8 +212,13 @@ export default function CheckInScreen() {
       }
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Today's Prayers</Text>
-        <Text style={styles.date}>{formatDualDate()}</Text>
+        <View>
+          <Text style={styles.title}>Today's Prayers</Text>
+          <Text style={styles.date}>{formatDualDate()}</Text>
+        </View>
+        <TouchableOpacity onPress={() => router.push('/profile')}>
+          <MaterialCommunityIcons name="account-circle" size={34} color="#fff" />
+        </TouchableOpacity>
       </View>
 
       <Card style={styles.progressCard}>
@@ -367,6 +374,9 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 24,
     backgroundColor: '#065F46',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     fontSize: 28,

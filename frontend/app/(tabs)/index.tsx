@@ -11,6 +11,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Text, Card, Button, ActivityIndicator } from 'react-native-paper';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as Haptics from 'expo-haptics';
 import { FeedSkeletonCard } from '../../src/components/SkeletonLoader';
 import { useRouter } from 'expo-router';
@@ -153,8 +154,13 @@ export default function FeedScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Feed</Text>
-        <Text style={styles.subtitle}>Your friends' prayers</Text>
+        <View>
+          <Text style={styles.title}>Feed</Text>
+          <Text style={styles.subtitle}>Your friends' prayers</Text>
+        </View>
+        <TouchableOpacity onPress={() => router.push('/profile')}>
+          <MaterialCommunityIcons name="account-circle" size={34} color="#fff" />
+        </TouchableOpacity>
       </View>
 
       {loading ? (
@@ -239,6 +245,9 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 60,
     backgroundColor: '#065F46',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     fontSize: 28,
