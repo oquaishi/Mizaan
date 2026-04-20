@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { Card, Button, Text, List, Divider } from 'react-native-paper';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useRouter } from 'expo-router';
 import { PrayerTimesSkeletonScreen } from '@/src/components/SkeletonLoader';
 import * as Location from 'expo-location';
 import { usePrayerTimes } from '@/src/context/PrayerTimesContext';
@@ -10,6 +12,7 @@ import { useAuth } from '@/src/context/AuthContext';
 export default function PrayerTimesScreen() {
   const { prayerTimes, isLoading, error, fetchPrayerTimes, refreshPrayerTimes } = usePrayerTimes();
   const { user } = useAuth();
+  const router = useRouter();
   const [locationError, setLocationError] = useState<string | null>(null);
   const [requestingLocation, setRequestingLocation] = useState(false);
   const [timeLeft, setTimeLeft] = useState<string>('');
@@ -134,6 +137,13 @@ export default function PrayerTimesScreen() {
   if (!prayerTimes) return null;
 
   return (
+    <View style={styles.screen}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Prayer Times</Text>
+        <TouchableOpacity onPress={() => router.push('/profile')}>
+          <MaterialCommunityIcons name="account-circle" size={34} color="#fff" />
+        </TouchableOpacity>
+      </View>
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
@@ -228,10 +238,28 @@ export default function PrayerTimesScreen() {
         </Card.Content>
       </Card>
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#FBF8F2',
+  },
+  header: {
+    padding: 20,
+    paddingTop: 60,
+    backgroundColor: '#065F46',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FBF8F2',

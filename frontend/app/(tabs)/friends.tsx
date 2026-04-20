@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text, Card, Button, Chip, ActivityIndicator } from 'react-native-paper';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useRouter } from 'expo-router';
 import { FriendSkeletonCard } from '../../src/components/SkeletonLoader';
 import {
   friendsAPI,
@@ -32,6 +34,7 @@ export default function FriendsScreen() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const { refreshCount } = useFriendRequests();
+  const router = useRouter();
 
   useEffect(() => {
     loadData();
@@ -137,6 +140,9 @@ export default function FriendsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Friends</Text>
+        <TouchableOpacity onPress={() => router.push('/profile')}>
+          <MaterialCommunityIcons name="account-circle" size={34} color="#fff" />
+        </TouchableOpacity>
       </View>
 
       {/* Tab Selector */}
@@ -349,6 +355,9 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 60,
     backgroundColor: '#065F46',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     fontSize: 28,
