@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Text, Card, ActivityIndicator } from 'react-native-paper';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/context/AuthContext';
 import { statsAPI, Stats } from '@/src/services/statsService';
@@ -89,6 +90,22 @@ export default function ProfileScreen() {
             </View>
           </>
         )}
+
+        {/* Navigation Hub */}
+        <Text style={styles.sectionLabel}>Explore</Text>
+
+        <TouchableOpacity style={styles.hubCard} onPress={() => router.push('/(tabs)/explore')}>
+          <MaterialCommunityIcons name="chart-bar" size={24} color="#047857" />
+          <Text style={styles.hubCardText}>Statistics & Leaderboard</Text>
+          <MaterialCommunityIcons name="chevron-right" size={22} color="#ccc" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.hubCard} onPress={() => router.push('/(tabs)/settings')}>
+          <MaterialCommunityIcons name="cog" size={24} color="#047857" />
+          <Text style={styles.hubCardText}>Settings</Text>
+          <MaterialCommunityIcons name="chevron-right" size={22} color="#ccc" />
+        </TouchableOpacity>
+
       </ScrollView>
     </View>
   );
@@ -187,5 +204,21 @@ const styles = StyleSheet.create({
   },
   spinner: {
     marginTop: 40,
+  },
+  hubCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    elevation: 1,
+    gap: 12,
+  },
+  hubCardText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#1a1a1a',
   },
 });
