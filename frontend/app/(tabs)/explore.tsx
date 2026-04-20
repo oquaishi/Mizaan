@@ -61,6 +61,37 @@ export default function StatisticsScreen() {
 
       {loading ? <StatsSkeletonScreen /> : <>
 
+      {/* Leaderboard — hero section */}
+      {leaderboard && (
+        <Card style={styles.leaderboardCard}>
+          <Card.Content>
+            <View style={styles.leaderboardHeader}>
+              <Text style={styles.calendarTitle}>This Week's Leaderboard</Text>
+              <Text style={styles.resetText}>Resets in {leaderboard.days_until_reset}d</Text>
+            </View>
+
+            {leaderboard.leaderboard.map((entry) => (
+              <View
+                key={entry.user_id}
+                style={[styles.leaderboardRow, entry.is_me && styles.leaderboardRowMe]}
+              >
+                <Text style={[styles.rankText, entry.rank === 1 && styles.rank1, entry.rank === 2 && styles.rank2, entry.rank === 3 && styles.rank3]}>
+                  {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `#${entry.rank}`}
+                </Text>
+                <Text style={[styles.leaderboardUsername, entry.is_me && styles.leaderboardUsernameMe]}>
+                  {entry.username}{entry.is_me ? ' (you)' : ''}
+                </Text>
+                <Text style={styles.leaderboardCount}>{entry.count} prayers</Text>
+              </View>
+            ))}
+
+            {leaderboard.leaderboard.length === 0 && (
+              <Text style={styles.leaderboardEmpty}>Add friends to start competing</Text>
+            )}
+          </Card.Content>
+        </Card>
+      )}
+
       {/* Streak Cards */}
       <View style={styles.streakRow}>
         <Card style={[styles.streakCard, styles.currentStreakCard]}>
@@ -139,37 +170,6 @@ export default function StatisticsScreen() {
           </View>
         </Card.Content>
       </Card>
-
-      {/* Leaderboard */}
-      {leaderboard && (
-        <Card style={styles.leaderboardCard}>
-          <Card.Content>
-            <View style={styles.leaderboardHeader}>
-              <Text style={styles.calendarTitle}>This Week's Leaderboard</Text>
-              <Text style={styles.resetText}>Resets in {leaderboard.days_until_reset}d</Text>
-            </View>
-
-            {leaderboard.leaderboard.map((entry) => (
-              <View
-                key={entry.user_id}
-                style={[styles.leaderboardRow, entry.is_me && styles.leaderboardRowMe]}
-              >
-                <Text style={[styles.rankText, entry.rank === 1 && styles.rank1, entry.rank === 2 && styles.rank2, entry.rank === 3 && styles.rank3]}>
-                  {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `#${entry.rank}`}
-                </Text>
-                <Text style={[styles.leaderboardUsername, entry.is_me && styles.leaderboardUsernameMe]}>
-                  {entry.username}{entry.is_me ? ' (you)' : ''}
-                </Text>
-                <Text style={styles.leaderboardCount}>{entry.count} prayers</Text>
-              </View>
-            ))}
-
-            {leaderboard.leaderboard.length === 0 && (
-              <Text style={styles.leaderboardEmpty}>Add friends to start competing</Text>
-            )}
-          </Card.Content>
-        </Card>
-      )}
 
       </>}
     </ScrollView>
@@ -313,8 +313,8 @@ const styles = StyleSheet.create({
   },
   leaderboardCard: {
     margin: 16,
-    marginTop: 8,
-    marginBottom: 24,
+    marginTop: 16,
+    marginBottom: 8,
     backgroundColor: '#fff',
   },
   leaderboardHeader: {
