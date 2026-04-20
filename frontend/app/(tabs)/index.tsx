@@ -7,6 +7,8 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  Modal,
+  SafeAreaView,
 } from 'react-native';
 import { Text, Card, Button, ActivityIndicator } from 'react-native-paper';
 import * as Haptics from 'expo-haptics';
@@ -25,7 +27,7 @@ function timeAgo(isoString: string): string {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-function FeedCard({ item, onReact }: { item: FeedItem; onReact: (id: string, reacted: boolean) => void }) {
+function FeedCard({ item, onReact, onPhotoPress }: { item: FeedItem; onReact: (id: string, reacted: boolean) => void; onPhotoPress: (url: string) => void }) {
   return (
     <Card style={styles.card}>
       <Card.Content>
@@ -47,11 +49,13 @@ function FeedCard({ item, onReact }: { item: FeedItem; onReact: (id: string, rea
 
         {/* Photo */}
         {item.photo_url && (
-          <Image
-            source={{ uri: item.photo_url }}
-            style={styles.photo}
-            resizeMode="cover"
-          />
+          <TouchableOpacity onPress={() => onPhotoPress(item.photo_url!)}>
+            <Image
+              source={{ uri: item.photo_url }}
+              style={styles.photo}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
         )}
 
         {/* Footer */}
@@ -84,6 +88,7 @@ export default function FeedScreen() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [fullscreenPhoto, setFullscreenPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     loadFeed(1, true);
@@ -164,7 +169,7 @@ export default function FeedScreen() {
         data={feed}
         keyExtractor={(item) => item.prayer_id}
         renderItem={({ item }) => (
-          <FeedCard item={item} onReact={handleReact} />
+          <FeedCard item={item} onReact={handleReact} onPhotoPress={setFullscreenPhoto} />
         )}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -194,6 +199,30 @@ export default function FeedScreen() {
         }
         contentContainerStyle={feed.length === 0 ? styles.emptyContainer : styles.listContent}
       />}
+
+      <Modal
+        visible={!!fullscreenPhoto}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => setFullscreenPhoto(null)}
+      >
+        <SafeAreaView style={styles.fullscreenContainer}>
+          <TouchableOpacity
+            style={styles.fullscreenClose}
+            onPress={() => setFullscreenPhoto(null)}
+          >
+            <Text style={styles.fullscreenCloseText}>✕</Text>
+          </TouchableOpacity>
+          {fullscreenPhoto && (
+            <Image
+              source={{ uri: fullscreenPhoto }}
+              style={styles.fullscreenImage}
+              resizeMode="contain"
+            />
+          )}
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 }
@@ -337,5 +366,31 @@ const styles = StyleSheet.create({
   emptyButton: {
     backgroundColor: '#047857',
     paddingHorizontal: 8,
+  },
+  fullscreenContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+  },
+  fullscreenImage: {
+    width: '100%',
+    height: '100%',
+  },
+  fullscreenClose: {
+    position: 'absolute',
+    top: 56,
+    right: 20,
+    zIndex: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullscreenCloseText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
