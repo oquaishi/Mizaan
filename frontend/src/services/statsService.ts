@@ -28,6 +28,14 @@ export interface Leaderboard {
   days_until_reset: number;
 }
 
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  earned: boolean;
+}
+
 export const statsAPI = {
   getStats: async (): Promise<Stats> => {
     const response = await api.get('/stats');
@@ -36,5 +44,9 @@ export const statsAPI = {
   getLeaderboard: async (): Promise<Leaderboard> => {
     const response = await api.get('/stats/leaderboard');
     return response.data;
+  },
+  getBadges: async (): Promise<Badge[]> => {
+    const response = await api.get('/stats/badges');
+    return response.data.badges;
   },
 };

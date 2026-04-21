@@ -9,7 +9,7 @@ import { Text, Card, ActivityIndicator } from 'react-native-paper';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/context/AuthContext';
-import { statsAPI, Stats } from '@/src/services/statsService';
+import { statsAPI, Stats, Badge } from '@/src/services/statsService';
 import { useFriendRequests } from '@/src/context/FriendRequestContext';
 
 export default function ProfileScreen() {
@@ -17,11 +17,15 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { pendingCount } = useFriendRequests();
   const [stats, setStats] = useState<Stats | null>(null);
+  const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    statsAPI.getStats()
-      .then(setStats)
+    Promise.all([statsAPI.getStats(), statsAPI.getBadges()])
+      .then(([statsData, badgesData]) => {
+        setStats(statsData);
+        setBadges(badgesData);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -89,6 +93,28 @@ export default function ProfileScreen() {
                   <Text style={styles.statLabel}>This{'\n'}Month</Text>
                 </Card.Content>
               </Card>
+            </View>
+
+            {/* Badges */}
+            <Text style={styles.sectionLabel}>Achievements</Text>
+            <View style={styles.badgesGrid}>
+              {badges.map((badge) => (
+                <View key={badge.id} style={[styles.badgeCard, !badge.earned && styles.badgeCardLocked]}>
+                  <View style={[styles.badgeIconCircle, !badge.earned && styles.badgeIconLocked]}>
+                    <MaterialCommunityIcons
+                      name={badge.icon as any}
+                      size={28}
+                      color={badge.earned ? '#fff' : '#bbb'}
+                    />
+                  </View>
+                  <Text style={[styles.badgeName, !badge.earned && styles.badgeNameLocked]}>
+                    {badge.name}
+                  </Text>
+                  <Text style={styles.badgeDesc} numberOfLines={2}>
+                    {badge.description}
+                  </Text>
+                </View>
+              ))}
             </View>
           </>
         )}
@@ -211,6 +237,52 @@ const styles = StyleSheet.create({
   },
   spinner: {
     marginTop: 40,
+  },
+  badgesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 24,
+  },
+  badgeCard: {
+    width: '47%',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+    elevation: 2,
+  },
+  badgeCardLocked: {
+    backgroundColor: '#f5f5f5',
+    elevation: 0,
+  },
+  badgeIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#047857',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  badgeIconLocked: {
+    backgroundColor: '#e0e0e0',
+  },
+  badgeName: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  badgeNameLocked: {
+    color: '#aaa',
+  },
+  badgeDesc: {
+    fontSize: 11,
+    color: '#888',
+    textAlign: 'center',
+    lineHeight: 15,
   },
   hubCard: {
     flexDirection: 'row',

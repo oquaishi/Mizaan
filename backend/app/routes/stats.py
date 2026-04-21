@@ -76,6 +76,89 @@ def get_leaderboard():
     })
 
 
+@bp.route('/badges', methods=['GET'])
+@jwt_required()
+def get_badges():
+    user_id = get_jwt_identity()
+
+    # Total completed prayers
+    total_prayers = Prayer.query.filter_by(user_id=user_id, status='completed').count()
+
+    # Longest streak (reuse StatsService)
+    full_stats = StatsService.get_full_stats(user_id)
+    longest_streak = full_stats.get('longest_streak', 0)
+
+    # Perfect day — any day with all 5 prayers completed
+    daily_counts = db.session.query(
+        Prayer.prayer_date,
+        func.count(Prayer.id).label('count')
+    ).filter(
+        Prayer.user_id == user_id,
+        Prayer.status == 'completed'
+    ).group_by(Prayer.prayer_date).all()
+    has_perfect_day = any(r.count >= 5 for r in daily_counts)
+
+    # Friend count
+    friend_count = Friendship.query.filter(
+        or_(Friendship.requester_id == user_id, Friendship.addressee_id == user_id),
+        Friendship.status == 'accepted'
+    ).count()
+
+    badges = [
+        {
+            'id': 'first_checkin',
+            'name': 'First Steps',
+            'description': 'Complete your first prayer check-in',
+            'icon': 'star',
+            'earned': total_prayers >= 1,
+        },
+        {
+            'id': 'streak_7',
+            'name': 'Week Warrior',
+            'description': 'Achieve a 7-day prayer streak',
+            'icon': 'fire',
+            'earned': longest_streak >= 7,
+        },
+        {
+            'id': 'streak_30',
+            'name': 'Month of Mercy',
+            'description': 'Achieve a 30-day prayer streak',
+            'icon': 'trophy',
+            'earned': longest_streak >= 30,
+        },
+        {
+            'id': 'prayers_50',
+            'name': 'Consistent',
+            'description': 'Complete 50 total prayers',
+            'icon': 'mosque',
+            'earned': total_prayers >= 50,
+        },
+        {
+            'id': 'prayers_100',
+            'name': 'Devoted',
+            'description': 'Complete 100 total prayers',
+            'icon': 'medal',
+            'earned': total_prayers >= 100,
+        },
+        {
+            'id': 'perfect_day',
+            'name': 'Perfect Day',
+            'description': 'Complete all 5 prayers in a single day',
+            'icon': 'check-decagram',
+            'earned': has_perfect_day,
+        },
+        {
+            'id': 'connected',
+            'name': 'Connected',
+            'description': 'Add your first friend',
+            'icon': 'account-group',
+            'earned': friend_count >= 1,
+        },
+    ]
+
+    return jsonify({'badges': badges})
+
+
 @bp.route('/debug', methods=['GET'])
 @jwt_required()
 @jwt_required()
