@@ -5,15 +5,19 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import { Text, Card } from 'react-native-paper';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useRouter } from 'expo-router';
 import { StatsSkeletonScreen } from '../../src/components/SkeletonLoader';
 import { statsAPI, Stats, CalendarDay, Leaderboard } from '../../src/services/statsService';
 
-export default function StatisticsScreen() {
+export default function JourneyScreen() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [leaderboard, setLeaderboard] = useState<Leaderboard | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -55,8 +59,13 @@ export default function StatisticsScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Statistics</Text>
-        <Text style={styles.subtitle}>Your prayer journey</Text>
+        <View>
+          <Text style={styles.title}>Journey</Text>
+          <Text style={styles.subtitle}>Your progress & rankings</Text>
+        </View>
+        <TouchableOpacity onPress={() => router.push('/profile')}>
+          <MaterialCommunityIcons name="account-circle" size={34} color="#fff" />
+        </TouchableOpacity>
       </View>
 
       {loading ? <StatsSkeletonScreen /> : <>
@@ -185,6 +194,9 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 60,
     backgroundColor: '#065F46',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     fontSize: 28,

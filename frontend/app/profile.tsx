@@ -10,10 +10,12 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/context/AuthContext';
 import { statsAPI, Stats } from '@/src/services/statsService';
+import { useFriendRequests } from '@/src/context/FriendRequestContext';
 
 export default function ProfileScreen() {
   const { user } = useAuth();
   const router = useRouter();
+  const { pendingCount } = useFriendRequests();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -94,9 +96,14 @@ export default function ProfileScreen() {
         {/* Navigation Hub */}
         <Text style={styles.sectionLabel}>Explore</Text>
 
-        <TouchableOpacity style={styles.hubCard} onPress={() => router.push('/(tabs)/explore')}>
-          <MaterialCommunityIcons name="chart-bar" size={24} color="#047857" />
-          <Text style={styles.hubCardText}>Statistics & Leaderboard</Text>
+        <TouchableOpacity style={styles.hubCard} onPress={() => router.push('/(tabs)/friends')}>
+          <MaterialCommunityIcons name="account-group" size={24} color="#047857" />
+          <Text style={styles.hubCardText}>Friends</Text>
+          {pendingCount > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{pendingCount}</Text>
+            </View>
+          )}
           <MaterialCommunityIcons name="chevron-right" size={22} color="#ccc" />
         </TouchableOpacity>
 
@@ -220,5 +227,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: '#1a1a1a',
+  },
+  badge: {
+    backgroundColor: '#047857',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 5,
+    marginRight: 6,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
   },
 });
