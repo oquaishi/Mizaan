@@ -226,6 +226,13 @@ export default function PrayerTimesScreen() {
         </List.Section>
       </Card>
 
+      {/* Qibla Direction */}
+      <TouchableOpacity style={styles.qiblaButton} onPress={() => router.push('/qibla')}>
+        <MaterialCommunityIcons name="compass" size={24} color="#fff" />
+        <Text style={styles.qiblaButtonText}>Qibla Direction</Text>
+        <MaterialCommunityIcons name="chevron-right" size={22} color="rgba(255,255,255,0.7)" />
+      </TouchableOpacity>
+
       {/* Method Info */}
       <Card style={styles.card}>
         <Card.Content>
@@ -348,5 +355,20 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 8,
+  },
+  qiblaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#065F46',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    gap: 12,
+  },
+  qiblaButtonText: {
+    flex: 1,
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

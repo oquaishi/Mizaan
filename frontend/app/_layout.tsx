@@ -71,7 +71,7 @@ function RootLayoutNav() {
       router.replace('/login');
     } else if (isAuthenticated && !user?.location && !inOnboarding) {
       router.replace('/onboarding');
-    } else if (isAuthenticated && user?.location && !inAuthGroup && segments[0] !== 'profile') {
+    } else if (isAuthenticated && user?.location && !inAuthGroup && segments[0] !== 'profile' && segments[0] !== 'qibla') {
       router.replace('/(tabs)');
     }
   }, [isAuthenticated, isLoading, user?.location, segments]);
@@ -95,6 +95,7 @@ function RootLayoutNav() {
         <Stack.Screen name="register" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="profile" options={{ headerShown: false }} />
+        <Stack.Screen name="qibla" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
