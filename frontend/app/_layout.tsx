@@ -71,7 +71,7 @@ function RootLayoutNav() {
       router.replace('/login');
     } else if (isAuthenticated && !user?.location && !inOnboarding) {
       router.replace('/onboarding');
-    } else if (isAuthenticated && user?.location && !inAuthGroup) {
+    } else if (isAuthenticated && user?.location && !inAuthGroup && segments[0] !== 'profile') {
       router.replace('/(tabs)');
     }
   }, [isAuthenticated, isLoading, user?.location, segments]);
