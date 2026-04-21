@@ -36,17 +36,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="prayer-times"
-        options={{
-          title: 'Prayer Times',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="clock.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="explore"
         options={{
           title: 'Journey',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="prayer-times"
+        options={{
+          title: 'Prayer Times',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="clock.fill" color={color} />,
         }}
       />
       <Tabs.Screen

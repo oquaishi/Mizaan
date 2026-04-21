@@ -17,6 +17,7 @@ export default function JourneyScreen() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [leaderboard, setLeaderboard] = useState<Leaderboard | null>(null);
   const [loading, setLoading] = useState(true);
+  const [leaderboardExpanded, setLeaderboardExpanded] = useState(false);
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -79,7 +80,7 @@ export default function JourneyScreen() {
               <Text style={styles.resetText}>Resets in {leaderboard.days_until_reset}d</Text>
             </View>
 
-            {leaderboard.leaderboard.map((entry) => (
+            {(leaderboardExpanded ? leaderboard.leaderboard : leaderboard.leaderboard.slice(0, 3)).map((entry) => (
               <View
                 key={entry.user_id}
                 style={[styles.leaderboardRow, entry.is_me && styles.leaderboardRowMe]}
@@ -93,6 +94,22 @@ export default function JourneyScreen() {
                 <Text style={styles.leaderboardCount}>{entry.count} prayers</Text>
               </View>
             ))}
+
+            {leaderboard.leaderboard.length > 3 && (
+              <TouchableOpacity
+                style={styles.expandButton}
+                onPress={() => setLeaderboardExpanded(!leaderboardExpanded)}
+              >
+                <Text style={styles.expandButtonText}>
+                  {leaderboardExpanded ? 'Show less' : `See all ${leaderboard.leaderboard.length} friends`}
+                </Text>
+                <MaterialCommunityIcons
+                  name={leaderboardExpanded ? 'chevron-up' : 'chevron-down'}
+                  size={16}
+                  color="#047857"
+                />
+              </TouchableOpacity>
+            )}
 
             {leaderboard.leaderboard.length === 0 && (
               <Text style={styles.leaderboardEmpty}>Add friends to start competing</Text>
@@ -383,5 +400,17 @@ const styles = StyleSheet.create({
     color: '#999',
     fontSize: 14,
     paddingVertical: 16,
+  },
+  expandButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 12,
+    gap: 4,
+  },
+  expandButtonText: {
+    fontSize: 14,
+    color: '#047857',
+    fontWeight: '600',
   },
 });
