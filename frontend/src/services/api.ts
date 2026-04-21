@@ -1,16 +1,10 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
 
 // For web browser testing: use localhost
 // For physical device testing: use your computer's IP address
 // Find your IP by running: ipconfig (Windows) or ifconfig (Mac/Linux)
-const LOCAL_IP = '192.168.4.23'; // Change this to your current IP for physical device testing
-
-// Automatically use the right URL based on platform
-const API_BASE_URL = Platform.OS === 'web'
-  ? 'http://localhost:5000/api'  // Web browser
-  : `http://${LOCAL_IP}:5000/api`; // Physical device
+const API_BASE_URL = 'https://mizaan-production.up.railway.app/api';
 
 // Create axios instance
 const api = axios.create({
