@@ -11,6 +11,16 @@ export interface FeedItem {
   prayer_date: string;
   reaction_count: number;
   user_reacted: boolean;
+  comment_count: number;
+}
+
+export interface Comment {
+  id: string;
+  user_id: string;
+  username: string;
+  prayer_id: string;
+  text: string;
+  created_at: string;
 }
 
 export interface FeedResponse {
@@ -33,5 +43,19 @@ export const feedAPI = {
   removeReaction: async (prayer_id: string): Promise<{ reaction_count: number }> => {
     const response = await api.delete(`/feed/${prayer_id}/react`);
     return response.data;
+  },
+
+  getComments: async (prayer_id: string): Promise<Comment[]> => {
+    const response = await api.get(`/feed/${prayer_id}/comments`);
+    return response.data.comments;
+  },
+
+  addComment: async (prayer_id: string, text: string): Promise<Comment> => {
+    const response = await api.post(`/feed/${prayer_id}/comments`, { text });
+    return response.data;
+  },
+
+  deleteComment: async (comment_id: string): Promise<void> => {
+    await api.delete(`/feed/comments/${comment_id}`);
   },
 };

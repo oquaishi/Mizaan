@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,13 +9,18 @@ import {
   Alert,
   Modal,
   SafeAreaView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { Text, Card, Button, ActivityIndicator } from 'react-native-paper';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as Haptics from 'expo-haptics';
 import { FeedSkeletonCard } from '../../src/components/SkeletonLoader';
 import { useRouter } from 'expo-router';
-import { feedAPI, FeedItem } from '../../src/services/feedService';
+import { feedAPI, FeedItem, Comment } from '../../src/services/feedService';
+import { useAuth } from '@/src/context/AuthContext';
 
 function timeAgo(isoString: string): string {
   const now = new Date();
@@ -28,7 +33,7 @@ function timeAgo(isoString: string): string {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-function FeedCard({ item, onReact, onPhotoPress }: { item: FeedItem; onReact: (id: string, reacted: boolean) => void; onPhotoPress: (url: string) => void }) {
+function FeedCard({ item, onReact, onPhotoPress, onCommentPress }: { item: FeedItem; onReact: (id: string, reacted: boolean) => void; onPhotoPress: (url: string) => void; onCommentPress: (id: string) => void }) {
   return (
     <Card style={styles.card}>
       <Card.Content>
@@ -64,17 +69,28 @@ function FeedCard({ item, onReact, onPhotoPress }: { item: FeedItem; onReact: (i
           <Text style={styles.checkInText}>
             🕌 Prayed {item.prayer_name}
           </Text>
-          <TouchableOpacity
-            style={styles.reactionButton}
-            onPress={() => onReact(item.prayer_id, item.user_reacted)}
-          >
-            <Text style={[styles.reactionEmoji, item.user_reacted && styles.reactionActive]}>
-              🤲
-            </Text>
-            {item.reaction_count > 0 && (
-              <Text style={styles.reactionCount}>{item.reaction_count}</Text>
-            )}
-          </TouchableOpacity>
+          <View style={styles.cardActions}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => onCommentPress(item.prayer_id)}
+            >
+              <MaterialCommunityIcons name="comment-outline" size={20} color="#999" />
+              {item.comment_count > 0 && (
+                <Text style={styles.actionCount}>{item.comment_count}</Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => onReact(item.prayer_id, item.user_reacted)}
+            >
+              <Text style={[styles.reactionEmoji, item.user_reacted && styles.reactionActive]}>
+                🤲
+              </Text>
+              {item.reaction_count > 0 && (
+                <Text style={styles.actionCount}>{item.reaction_count}</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
       </Card.Content>
     </Card>
@@ -83,6 +99,7 @@ function FeedCard({ item, onReact, onPhotoPress }: { item: FeedItem; onReact: (i
 
 export default function FeedScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const [feed, setFeed] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -90,6 +107,12 @@ export default function FeedScreen() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [fullscreenPhoto, setFullscreenPhoto] = useState<string | null>(null);
+
+  const [commentsModalPrayerId, setCommentsModalPrayerId] = useState<string | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
     loadFeed(1, true);
@@ -151,6 +174,64 @@ export default function FeedScreen() {
     }
   };
 
+  const openComments = async (prayerId: string) => {
+    setCommentsModalPrayerId(prayerId);
+    setComments([]);
+    setCommentsLoading(true);
+    try {
+      const data = await feedAPI.getComments(prayerId);
+      setComments(data);
+    } catch {
+      // silently fail
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  const closeComments = () => {
+    setCommentsModalPrayerId(null);
+    setCommentText('');
+  };
+
+  const submitComment = async () => {
+    if (!commentsModalPrayerId || !commentText.trim()) return;
+    setSubmittingComment(true);
+    try {
+      const newComment = await feedAPI.addComment(commentsModalPrayerId, commentText.trim());
+      setComments(prev => [...prev, newComment]);
+      setCommentText('');
+      setFeed(prev =>
+        prev.map(item =>
+          item.prayer_id === commentsModalPrayerId
+            ? { ...item, comment_count: item.comment_count + 1 }
+            : item
+        )
+      );
+    } catch (error: any) {
+      Alert.alert('Error', error.response?.data?.error || 'Failed to post comment');
+    } finally {
+      setSubmittingComment(false);
+    }
+  };
+
+  const deleteComment = async (commentId: string) => {
+    try {
+      await feedAPI.deleteComment(commentId);
+      setComments(prev => prev.filter(c => c.id !== commentId));
+      if (commentsModalPrayerId) {
+        setFeed(prev =>
+          prev.map(item =>
+            item.prayer_id === commentsModalPrayerId
+              ? { ...item, comment_count: Math.max(0, item.comment_count - 1) }
+              : item
+          )
+        );
+      }
+    } catch {
+      Alert.alert('Error', 'Failed to delete comment');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -175,7 +256,7 @@ export default function FeedScreen() {
         data={feed}
         keyExtractor={(item) => item.prayer_id}
         renderItem={({ item }) => (
-          <FeedCard item={item} onReact={handleReact} onPhotoPress={setFullscreenPhoto} />
+          <FeedCard item={item} onReact={handleReact} onPhotoPress={setFullscreenPhoto} onCommentPress={openComments} />
         )}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -205,6 +286,74 @@ export default function FeedScreen() {
         }
         contentContainerStyle={feed.length === 0 ? styles.emptyContainer : styles.listContent}
       />}
+
+      {/* Comments Modal */}
+      <Modal
+        visible={!!commentsModalPrayerId}
+        transparent
+        animationType="slide"
+        onRequestClose={closeComments}
+      >
+        <KeyboardAvoidingView
+          style={styles.commentsOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <TouchableOpacity style={styles.commentsDismiss} onPress={closeComments} activeOpacity={1} />
+          <View style={styles.commentsSheet}>
+            <View style={styles.commentsHeader}>
+              <Text style={styles.commentsTitle}>Comments</Text>
+              <TouchableOpacity onPress={closeComments}>
+                <MaterialCommunityIcons name="close" size={22} color="#666" />
+              </TouchableOpacity>
+            </View>
+
+            {commentsLoading ? (
+              <ActivityIndicator size="small" color="#047857" style={{ marginTop: 24 }} />
+            ) : (
+              <ScrollView style={styles.commentsList} keyboardShouldPersistTaps="handled">
+                {comments.length === 0 && (
+                  <Text style={styles.noComments}>No comments yet. Be the first!</Text>
+                )}
+                {comments.map(c => (
+                  <View key={c.id} style={styles.commentRow}>
+                    <View style={styles.commentAvatar}>
+                      <Text style={styles.commentAvatarText}>{c.username.charAt(0).toUpperCase()}</Text>
+                    </View>
+                    <View style={styles.commentBody}>
+                      <Text style={styles.commentUsername}>{c.username}</Text>
+                      <Text style={styles.commentText}>{c.text}</Text>
+                    </View>
+                    {c.user_id === user?.id && (
+                      <TouchableOpacity onPress={() => deleteComment(c.id)} style={styles.commentDelete}>
+                        <MaterialCommunityIcons name="trash-can-outline" size={16} color="#ccc" />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </ScrollView>
+            )}
+
+            <View style={styles.commentInput}>
+              <TextInput
+                style={styles.commentTextInput}
+                placeholder="Add a comment..."
+                placeholderTextColor="#aaa"
+                value={commentText}
+                onChangeText={setCommentText}
+                maxLength={500}
+                multiline
+              />
+              <TouchableOpacity
+                style={[styles.commentSend, (!commentText.trim() || submittingComment) && styles.commentSendDisabled]}
+                onPress={submitComment}
+                disabled={!commentText.trim() || submittingComment}
+              >
+                <MaterialCommunityIcons name="send" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
 
       <Modal
         visible={!!fullscreenPhoto}
@@ -326,12 +475,23 @@ const styles = StyleSheet.create({
   checkInText: {
     fontSize: 14,
     color: '#555',
+    flex: 1,
   },
-  reactionButton: {
+  cardActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     padding: 6,
+  },
+  actionCount: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
   },
   reactionEmoji: {
     fontSize: 22,
@@ -340,10 +500,113 @@ const styles = StyleSheet.create({
   reactionActive: {
     opacity: 1,
   },
-  reactionCount: {
+  commentsOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  commentsDismiss: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  commentsSheet: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '70%',
+    paddingBottom: 16,
+  },
+  commentsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  commentsTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1a1a1a',
+  },
+  commentsList: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    maxHeight: 320,
+  },
+  noComments: {
+    textAlign: 'center',
+    color: '#aaa',
     fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
+    paddingVertical: 24,
+  },
+  commentRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f5f5f5',
+  },
+  commentAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#047857',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  commentAvatarText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  commentBody: {
+    flex: 1,
+  },
+  commentUsername: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 2,
+  },
+  commentText: {
+    fontSize: 14,
+    color: '#444',
+    lineHeight: 20,
+  },
+  commentDelete: {
+    padding: 4,
+    alignSelf: 'center',
+  },
+  commentInput: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    gap: 8,
+  },
+  commentTextInput: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    fontSize: 14,
+    color: '#1a1a1a',
+    maxHeight: 80,
+  },
+  commentSend: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#047857',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  commentSendDisabled: {
+    backgroundColor: '#ccc',
   },
   footerSpinner: {
     paddingVertical: 16,

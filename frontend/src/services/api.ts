@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 // For web browser testing: use localhost
 // For physical device testing: use your computer's IP address
 // Find your IP by running: ipconfig (Windows) or ifconfig (Mac/Linux)
-const LOCAL_IP = '192.168.1.231'; // Change this to your current IP for physical device testing
+const LOCAL_IP = '192.168.4.23'; // Change this to your current IP for physical device testing
 
 // Automatically use the right URL based on platform
 const API_BASE_URL = Platform.OS === 'web'
