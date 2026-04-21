@@ -5,6 +5,7 @@ from app import db
 from app.models.prayer import Prayer
 from app.models.friendship import Friendship
 from app.models.reaction import Reaction
+from app.models.comment import Comment
 from app.models.user import User
 
 bp = Blueprint('feed', __name__, url_prefix='/api/feed')
@@ -35,14 +36,12 @@ def get_feed():
     page = request.args.get('page', 1, type=int)
 
     friend_ids = get_friend_ids(user_id)
-
-    if not friend_ids:
-        return jsonify({'feed': [], 'page': page, 'has_more': False})
+    visible_ids = friend_ids + [user_id]
 
     offset = (page - 1) * PAGE_SIZE
 
     prayers = Prayer.query.filter(
-        Prayer.user_id.in_(friend_ids)
+        Prayer.user_id.in_(visible_ids)
     ).order_by(
         Prayer.checked_in_at.desc()
     ).limit(PAGE_SIZE + 1).offset(offset).all()
@@ -58,6 +57,7 @@ def get_feed():
             prayer_id=prayer.id,
             user_id=user_id
         ).first() is not None
+        comment_count = Comment.query.filter_by(prayer_id=prayer.id).count()
 
         feed.append({
             'prayer_id': prayer.id,
@@ -69,10 +69,62 @@ def get_feed():
             'checked_in_at': prayer.checked_in_at.isoformat() if prayer.checked_in_at else None,
             'prayer_date': prayer.prayer_date.isoformat() if prayer.prayer_date else None,
             'reaction_count': reaction_count,
-            'user_reacted': user_reacted
+            'user_reacted': user_reacted,
+            'comment_count': comment_count,
         })
 
     return jsonify({'feed': feed, 'page': page, 'has_more': has_more})
+
+
+@bp.route('/<prayer_id>/comments', methods=['GET'])
+@jwt_required()
+def get_comments(prayer_id):
+    prayer = Prayer.query.get(prayer_id)
+    if not prayer:
+        return jsonify({'error': 'Prayer not found'}), 404
+
+    comments = Comment.query.filter_by(prayer_id=prayer_id).order_by(Comment.created_at.asc()).all()
+    return jsonify({'comments': [c.to_dict() for c in comments]})
+
+
+@bp.route('/<prayer_id>/comments', methods=['POST'])
+@jwt_required()
+def add_comment(prayer_id):
+    user_id = get_jwt_identity()
+
+    prayer = Prayer.query.get(prayer_id)
+    if not prayer:
+        return jsonify({'error': 'Prayer not found'}), 404
+
+    data = request.get_json()
+    text = (data.get('text') or '').strip()
+    if not text:
+        return jsonify({'error': 'Comment text is required'}), 400
+    if len(text) > 500:
+        return jsonify({'error': 'Comment too long (max 500 characters)'}), 400
+
+    comment = Comment(user_id=user_id, prayer_id=prayer_id, text=text)
+    db.session.add(comment)
+    db.session.commit()
+
+    return jsonify(comment.to_dict()), 201
+
+
+@bp.route('/comments/<comment_id>', methods=['DELETE'])
+@jwt_required()
+def delete_comment(comment_id):
+    user_id = get_jwt_identity()
+
+    comment = Comment.query.get(comment_id)
+    if not comment:
+        return jsonify({'error': 'Comment not found'}), 404
+    if comment.user_id != user_id:
+        return jsonify({'error': 'Not authorized'}), 403
+
+    db.session.delete(comment)
+    db.session.commit()
+
+    return jsonify({'message': 'Comment deleted'})
 
 
 @bp.route('/<prayer_id>/react', methods=['POST'])
